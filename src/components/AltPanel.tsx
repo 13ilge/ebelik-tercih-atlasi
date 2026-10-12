@@ -6,33 +6,22 @@ import {
   ArrowLeftRight,
   Check,
   Download,
+  FileDown,
   GripVertical,
   Link2,
   ListOrdered,
-  Printer,
   Trash2,
   X,
 } from "lucide-react";
 import { alimGetir, dataset, donemKadro, ilHaritasi } from "@/lib/data";
 import { puanStr, sayi, tl } from "@/lib/format";
+import { listePdfIndir } from "@/lib/pdf";
 import { listePngIndir } from "@/lib/png";
 import type { Il } from "@/lib/types";
 import IlAraEkle from "./IlAraEkle";
 import IlDetay from "./IlDetay";
 import KarsilastirmaTablosu from "./KarsilastirmaTablosu";
 import { Kart, Rozet } from "./ui";
-
-const YAZDIRMA_STILI = `
-  * { box-sizing: border-box; }
-  body { font-family: Arial, sans-serif; margin: 32px; color: #0f172a; }
-  h1 { font-size: 22px; margin: 0 0 4px; }
-  .alt { color: #475569; font-size: 14px; margin-bottom: 20px; }
-  ol { list-style: none; padding: 0; margin: 0; }
-  li { display: flex; justify-content: space-between; gap: 16px; padding: 10px 12px; border-bottom: 1px solid #e2e8f0; font-size: 15px; }
-  li:nth-child(odd) { background: #f8fafc; }
-  li span { color: #334155; white-space: nowrap; }
-  .not { margin-top: 20px; font-size: 12px; color: #64748b; line-height: 1.5; }
-`;
 
 interface Props {
   secililer: number[];
@@ -67,6 +56,7 @@ export default function AltPanel({
 }: Props) {
   const aktifIl = aktif !== null ? ilHaritasi.get(aktif) : undefined;
   const [kopyalandi, setKopyalandi] = useState(false);
+  const [listeAcik, setListeAcik] = useState(false);
   const [suruklenen, setSuruklenen] = useState<number | null>(null);
   const surukleRef = useRef<number | null>(null);
   const surukleTemizleRef = useRef<(() => void) | null>(null);
@@ -114,55 +104,15 @@ export default function AltPanel({
     });
   };
 
-  const yazdir = () => {
-    const iframe = document.createElement("iframe");
-    iframe.setAttribute("aria-hidden", "true");
-    iframe.tabIndex = -1;
-    iframe.style.position = "fixed";
-    iframe.style.width = "0";
-    iframe.style.height = "0";
-    iframe.style.border = "0";
-    document.body.appendChild(iframe);
-    const doc = iframe.contentDocument;
-    const pencere = iframe.contentWindow;
-    if (!doc || !pencere) {
-      iframe.remove();
-      return;
-    }
-    doc.title = `Ebelik Tercih Listem — ${donem}`;
-    const stil = doc.createElement("style");
-    stil.textContent = YAZDIRMA_STILI;
-    doc.head.appendChild(stil);
-
-    const baslik = doc.createElement("h1");
-    baslik.textContent = "Ebelik Tercih Listem";
-    const altBilgi = doc.createElement("div");
-    altBilgi.className = "alt";
-    altBilgi.textContent = `${donem} dönemi${
-      puan !== null ? ` · KPSS P3 puanın: ${puanStr(puan, 3)}` : ""
-    } · ${secililer.length} il`;
-    const liste = doc.createElement("ol");
-    for (const s of listeSatirlari()) {
-      const satir = doc.createElement("li");
-      const ad = doc.createElement("b");
-      ad.textContent = `${s.sira}. ${s.ad}`;
-      const deger = doc.createElement("span");
-      deger.textContent = s.sag;
-      satir.append(ad, deger);
-      liste.appendChild(satir);
-    }
-    const not = doc.createElement("p");
-    not.className = "not";
-    not.textContent =
-      "Bilgilendirme amaçlıdır; kesin tercih için ÖSYM ve Sağlık Bakanlığı duyurularını esas alın. Taban puan, ilgili dönemde o ile yerleşen en düşük puandır. — Ebelik Tercih Atlası";
-    doc.body.append(baslik, altBilgi, liste, not);
-
-    try {
-      pencere.focus();
-      pencere.print();
-    } finally {
-      setTimeout(() => iframe.remove(), 1500);
-    }
+  const pdfIndir = () => {
+    void listePdfIndir({
+      baslik: "Ebelik Tercih Listem",
+      altBaslik: `${donem} dönemi${puan !== null ? ` · KPSS P3: ${puanStr(puan, 3)}` : ""} · ${secililer.length} il`,
+      satirlar: listeSatirlari(),
+      dipnot:
+        "Bilgilendirme amaçlıdır; kesin tercih için ÖSYM ve Sağlık Bakanlığı duyurularını esas alın. Taban puan, ilgili dönemde o ile yerleşen en düşük puandır. — Ebelik Tercih Atlası",
+      dosyaAdi: `ebe-tercih-listesi-${donem.replace("/", "-")}.pdf`,
+    });
   };
 
   const tasi = (i: number, yon: -1 | 1) => {
@@ -210,6 +160,25 @@ export default function AltPanel({
     };
   }, []);
 
+  useEffect(() => {
+    if (!listeAcik) return;
+    const govdeOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    const tusla = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setListeAcik(false);
+    };
+    document.addEventListener("keydown", tusla);
+    return () => {
+      document.removeEventListener("keydown", tusla);
+      document.body.style.overflow = govdeOverflow;
+    };
+  }, [listeAcik]);
+
+  const aktifSec = (plaka: number) => {
+    onAktif(plaka);
+    setListeAcik(false);
+  };
+
   const siralaPuanGore = () => {
     const yeni = [...secililer].sort((a, b) => {
       const ila = ilHaritasi.get(a);
@@ -230,12 +199,129 @@ export default function AltPanel({
     onSirala(yeni);
   };
 
+  const listeIcerigi = (tamEkran: boolean) => (
+    <>
+      {!tamEkran && (
+        <div className="flex items-center justify-between gap-2">
+          <h3 className="flex items-center gap-2 text-base font-semibold text-slate-900">
+            <ListOrdered className="h-4 w-4 text-sky-700" />
+            Tercih sıran
+          </h3>
+          <Rozet ton="sky">{secililer.length} il</Rozet>
+        </div>
+      )}
+
+      <button
+        onClick={siralaPuanGore}
+        disabled={secililer.length < 2}
+        className={`${
+          tamEkran ? "mt-0" : "mt-2"
+        } flex w-full items-center justify-center gap-1.5 rounded-lg border border-sky-200 bg-sky-50 px-3 py-1.5 text-sm font-medium text-sky-800 transition hover:bg-sky-100 disabled:cursor-default disabled:opacity-50`}
+        title={
+          puan !== null
+            ? "Puanına en uygun (rahat) iller başa gelir"
+            : "En yüksek taban puanlı iller başa gelir (istenen → garanti)"
+        }
+      >
+        <ArrowDownWideNarrow className="h-4 w-4" />
+        {puan !== null ? "Puanıma göre sırala" : "Taban puana göre sırala"}
+      </button>
+
+      <div className="mt-1.5">
+        <IlAraEkle secililer={secililer} donem={donem} onEkle={onEkle} genis />
+      </div>
+
+      <ul
+        className={`mt-1.5 space-y-1 overflow-y-auto pr-1 ${
+          tamEkran
+            ? "max-h-none"
+            : "max-h-[28vh] lg:max-h-none lg:min-h-0 lg:flex-1"
+        }`}
+      >
+        {secililer.map((plaka, i) => {
+          const il = ilHaritasi.get(plaka);
+          if (!il) return null;
+          const alim = alimGetir(il, donem);
+          const seciliAktif = aktif === plaka && !karsilastir;
+          return (
+            <li
+              key={plaka}
+              data-satir={i}
+              className={`flex select-none items-center gap-1 rounded-lg border py-1 pl-1 pr-1 transition ${
+                seciliAktif
+                  ? "border-sky-300 bg-sky-50"
+                  : "border-slate-200 bg-white hover:border-slate-300"
+              } ${suruklenen === i ? "opacity-70 ring-2 ring-sky-400" : ""}`}
+            >
+              <button
+                onPointerDown={(e) => surukleBasla(e, i)}
+                onKeyDown={(e) => {
+                  if (e.key === "ArrowUp") {
+                    e.preventDefault();
+                    tasi(i, -1);
+                  }
+                  if (e.key === "ArrowDown") {
+                    e.preventDefault();
+                    tasi(i, 1);
+                  }
+                }}
+                aria-label={`${il.ad} ilini sırala: sürükle veya ok tuşlarını kullan`}
+                title="Sürükleyerek sırala (ok tuşları da çalışır)"
+                className="cursor-grab touch-none rounded p-1 text-slate-400 transition hover:bg-slate-100 hover:text-slate-700 active:cursor-grabbing"
+              >
+                <GripVertical className="h-4 w-4" />
+              </button>
+              <button
+                onClick={() => aktifSec(plaka)}
+                className="flex min-w-0 flex-1 items-center gap-2 text-left"
+                title={`${il.ad} detayını göster`}
+              >
+                <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-slate-800 text-xs font-bold text-white">
+                  {i + 1}
+                </span>
+                <span className="min-w-0 flex-1 truncate text-sm font-medium text-slate-800">
+                  {il.ad}
+                </span>
+                {tamEkran ? (
+                  <span className="w-24 shrink-0 text-right text-xs tabular-nums text-slate-500">
+                    {alim
+                      ? `${puanStr(alim.taban)} · ${alim.kontenjan} kadro`
+                      : "alım yok"}
+                  </span>
+                ) : (
+                  <>
+                    <span className="w-11 shrink-0 text-right text-xs tabular-nums text-slate-500">
+                      {alim ? puanStr(alim.taban) : "—"}
+                    </span>
+                    <span className="w-16 shrink-0 text-right text-xs tabular-nums text-slate-500">
+                      {alim ? `${alim.kontenjan} kadro` : "alım yok"}
+                    </span>
+                  </>
+                )}
+              </button>
+              <button
+                onClick={() => onCikar(plaka)}
+                aria-label={`${il.ad} ilini listeden çıkar`}
+                className="rounded p-1 text-slate-400 transition hover:text-red-600"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </li>
+          );
+        })}
+      </ul>
+      <p className="mt-2 text-[0.6875rem] leading-relaxed text-slate-400">
+        Tercih listen bu cihazda otomatik kaydedilir.
+      </p>
+    </>
+  );
+
   return (
     <section
       id="icerik"
       tabIndex={-1}
       onMouseEnter={onFareGiris}
-      className={`flex h-[40dvh] shrink-0 flex-col border-t border-slate-200 bg-slate-50 transition-[height] duration-300 ease-out outline-none motion-reduce:transition-none ${
+      className={`flex min-h-0 flex-1 flex-col border-t border-slate-200 bg-slate-50 transition-[height] duration-300 ease-out outline-none motion-reduce:transition-none lg:flex-none ${
         genis ? "lg:h-[76dvh]" : "lg:h-[50dvh]"
       }`}
     >
@@ -243,6 +329,14 @@ export default function AltPanel({
         {secililer.length > 0 ? (
           <div className="flex flex-col gap-3">
             <div className="flex flex-wrap items-center gap-2">
+              <button
+                onClick={() => setListeAcik(true)}
+                className="flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700 transition hover:border-sky-300 hover:text-sky-800 lg:hidden"
+              >
+                <ListOrdered className="h-4 w-4" />
+                Tercih listem ({secililer.length})
+              </button>
+
               {secililer.length >= 2 && (
                 <button
                   onClick={() => onKarsilastir(!karsilastir)}
@@ -286,13 +380,13 @@ export default function AltPanel({
                   <span className="hidden sm:inline">PNG</span>
                 </button>
                 <button
-                  onClick={yazdir}
-                  title="Yazdır / PDF olarak kaydet"
-                  aria-label="Yazdır"
+                  onClick={pdfIndir}
+                  title="Listeyi PDF olarak indir"
+                  aria-label="PDF indir"
                   className="flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-600 transition hover:border-slate-300 hover:text-slate-900"
                 >
-                  <Printer className="h-4 w-4" />
-                  <span className="hidden sm:inline">Yazdır</span>
+                  <FileDown className="h-4 w-4" />
+                  <span className="hidden sm:inline">PDF indir</span>
                 </button>
                 <button
                   onClick={onTemizle}
@@ -308,109 +402,13 @@ export default function AltPanel({
 
             <div className="flex flex-col gap-3 lg:flex-row lg:items-start">
             <aside
-              className={`order-2 w-full shrink-0 rounded-xl border border-slate-200 bg-white p-3 shadow-sm lg:order-1 lg:flex lg:w-80 lg:flex-col ${
+              className={`hidden shrink-0 rounded-xl border border-slate-200 bg-white p-3 shadow-sm lg:flex lg:order-1 lg:w-80 lg:flex-col ${
                 genis
                   ? "lg:max-h-[calc(76dvh-2rem)]"
                   : "lg:max-h-[calc(50dvh-2rem)]"
               }`}
             >
-              <div className="flex items-center justify-between gap-2">
-                <h3 className="flex items-center gap-2 text-base font-semibold text-slate-900">
-                  <ListOrdered className="h-4 w-4 text-sky-700" />
-                  Tercih sıran
-                </h3>
-                <Rozet ton="sky">{secililer.length} il</Rozet>
-              </div>
-
-              <button
-                onClick={siralaPuanGore}
-                disabled={secililer.length < 2}
-                className="mt-2 flex w-full items-center justify-center gap-1.5 rounded-lg border border-sky-200 bg-sky-50 px-3 py-1.5 text-sm font-medium text-sky-800 transition hover:bg-sky-100 disabled:cursor-default disabled:opacity-50"
-                title={
-                  puan !== null
-                    ? "Puanına en uygun (rahat) iller başa gelir"
-                    : "En yüksek taban puanlı iller başa gelir (istenen → garanti)"
-                }
-              >
-                <ArrowDownWideNarrow className="h-4 w-4" />
-                {puan !== null ? "Puanıma göre sırala" : "Taban puana göre sırala"}
-              </button>
-
-              <div className="mt-1.5">
-                <IlAraEkle
-                  secililer={secililer}
-                  donem={donem}
-                  onEkle={onEkle}
-                  genis
-                />
-              </div>
-
-              <ul className="mt-1.5 max-h-[28vh] space-y-1 overflow-y-auto pr-1 lg:max-h-none lg:min-h-0 lg:flex-1">
-                {secililer.map((plaka, i) => {
-                  const il = ilHaritasi.get(plaka);
-                  if (!il) return null;
-                  const alim = alimGetir(il, donem);
-                  const seciliAktif = aktif === plaka && !karsilastir;
-                  return (
-                    <li
-                      key={plaka}
-                      data-satir={i}
-                      className={`flex select-none items-center gap-1 rounded-lg border py-1 pl-1 pr-1 transition ${
-                        seciliAktif
-                          ? "border-sky-300 bg-sky-50"
-                          : "border-slate-200 bg-white hover:border-slate-300"
-                      } ${suruklenen === i ? "opacity-70 ring-2 ring-sky-400" : ""}`}
-                    >
-                      <button
-                        onPointerDown={(e) => surukleBasla(e, i)}
-                        onKeyDown={(e) => {
-                          if (e.key === "ArrowUp") {
-                            e.preventDefault();
-                            tasi(i, -1);
-                          }
-                          if (e.key === "ArrowDown") {
-                            e.preventDefault();
-                            tasi(i, 1);
-                          }
-                        }}
-                        aria-label={`${il.ad} ilini sırala: sürükle veya ok tuşlarını kullan`}
-                        title="Sürükleyerek sırala (ok tuşları da çalışır)"
-                        className="cursor-grab touch-none rounded p-1 text-slate-400 transition hover:bg-slate-100 hover:text-slate-700 active:cursor-grabbing"
-                      >
-                        <GripVertical className="h-4 w-4" />
-                      </button>
-                      <button
-                        onClick={() => onAktif(plaka)}
-                        className="flex min-w-0 flex-1 items-center gap-2 text-left"
-                        title={`${il.ad} detayını göster`}
-                      >
-                        <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-slate-800 text-xs font-bold text-white">
-                          {i + 1}
-                        </span>
-                        <span className="min-w-0 flex-1 truncate text-sm font-medium text-slate-800">
-                          {il.ad}
-                        </span>
-                        <span className="w-11 shrink-0 text-right text-xs tabular-nums text-slate-500">
-                          {alim ? puanStr(alim.taban) : "—"}
-                        </span>
-                        <span className="w-16 shrink-0 text-right text-xs tabular-nums text-slate-500">
-                          {alim ? `${alim.kontenjan} kadro` : "alım yok"}
-                        </span>
-                      </button>
-                      <button
-                        onClick={() => onCikar(plaka)}
-                        aria-label={`${il.ad} ilini listeden çıkar`}
-                        className="rounded p-1 text-slate-400 transition hover:text-red-600"
-                      >
-                        <X className="h-4 w-4" />
-                      </button>
-                    </li>
-                  );
-                })}
-              </ul>
-              <p className="mt-2 text-[0.6875rem] leading-relaxed text-slate-400">
-                Tercih listen bu cihazda otomatik kaydedilir.
-              </p>
+              {listeIcerigi(false)}
             </aside>
 
             <div className="order-1 min-w-0 flex-1 lg:order-2">
@@ -431,6 +429,35 @@ export default function AltPanel({
                 />
               ) : null}
             </div>
+            {listeAcik && (
+              <div
+                className="fixed inset-0 z-50 flex flex-col bg-slate-50 lg:hidden"
+                role="dialog"
+                aria-modal="true"
+                aria-label="Tercih listem"
+              >
+                <div className="flex items-center gap-2 border-b border-slate-200 bg-white px-3 py-2.5">
+                  <h2 className="flex items-center gap-2 text-base font-semibold text-slate-900">
+                    <ListOrdered className="h-4 w-4 text-sky-700" />
+                    Tercih listem
+                  </h2>
+                  <Rozet ton="sky">{secililer.length} il</Rozet>
+                  <button
+                    onClick={() => setListeAcik(false)}
+                    aria-label="Listeyi kapat"
+                    className="ml-auto rounded-lg p-1.5 text-slate-400 transition hover:bg-slate-100 hover:text-slate-700"
+                  >
+                    <X className="h-5 w-5" />
+                  </button>
+                </div>
+                <div className="min-h-0 flex-1 overflow-y-auto p-3">
+                  <div className="rounded-xl border border-slate-200 bg-white p-3 shadow-sm">
+                    {listeIcerigi(true)}
+                  </div>
+                </div>
+              </div>
+            )}
+
             </div>
           </div>
         ) : (
@@ -475,7 +502,7 @@ function BosDurum({
             <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-sky-100 text-xs font-bold text-sky-800">
               1
             </span>
-            Haritadan bir ile tıkla; seçtiğin il soldaki tercih listene
+            Bir il seç (haritadan, aramadan ya da listeden); tercih listene
             eklenir, detayları burada açılır.
           </li>
           <li className="flex gap-2">

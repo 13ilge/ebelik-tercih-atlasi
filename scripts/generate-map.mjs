@@ -123,30 +123,21 @@ function yerlestir(scale) {
 }
 
 const masaustu = yerlestir(1.5);
-const mobil = yerlestir(3.5);
 
 const iller = BASE.map((il) => {
   const m1 = masaustu.find((r) => r.plaka === il.plaka);
-  const m2 = mobil.find((r) => r.plaka === il.plaka);
   return {
     ...il,
     etiketX: m1.x,
     etiketY: m1.y,
     etiketTier: m1.tier,
-    mEtiketX: m2.x,
-    mEtiketY: m2.y,
-    mEtiketTier: m2.tier,
   };
 });
 
 iller.sort((a, b) => a.plaka - b.plaka);
 
 const say = (tier) => iller.filter((i) => i.etiketTier === tier).length;
-const sayM = (tier) => iller.filter((i) => i.mEtiketTier === tier).length;
-const tierSayisi = {
-  masaustu: { tam: say("tam"), ad: say("ad"), yok: say("yok") },
-  mobil: { tam: sayM("tam"), ad: sayM("ad"), yok: sayM("yok") },
-};
+const tierSayisi = { tam: say("tam"), ad: say("ad"), yok: say("yok") };
 
 const outDir = path.join(root, "src", "data");
 fs.mkdirSync(outDir, { recursive: true });

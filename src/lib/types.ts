@@ -54,9 +54,6 @@ export interface HaritaIl {
   etiketX: number | null;
   etiketY: number | null;
   etiketTier: EtiketTier;
-  mEtiketX: number | null;
-  mEtiketY: number | null;
-  mEtiketTier: EtiketTier;
 }
 
 export interface Harita {

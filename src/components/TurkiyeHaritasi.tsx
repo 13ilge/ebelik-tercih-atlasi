@@ -56,14 +56,6 @@ const SLACK = 60;
 const ETIKET_RENK = "#0f172a";
 const VURGU_RENK = "#0369a1";
 
-let mobilMedya: MediaQueryList | null = null;
-function mobilMedyaAl() {
-  if (!mobilMedya) {
-    mobilMedya = window.matchMedia("(max-width: 767px)");
-  }
-  return mobilMedya;
-}
-
 function sinirla(x: number, y: number, k: number): { x: number; y: number } {
   if (k <= 1.01) return { x: 0, y: 0 };
   return {
@@ -87,22 +79,10 @@ export default function TurkiyeHaritasi({
   const fareSonRef = useRef<FareKonum | null>(null);
   const fareRafRef = useRef<number | null>(null);
   const [gorunum, setGorunum] = useState<Gorunum>({ k: 1, x: 0, y: 0 });
-  const [ipucuAcik, setIpucuAcik] = useState(true);
   const gorunumRef = useRef(gorunum);
   useEffect(() => {
     gorunumRef.current = gorunum;
   }, [gorunum]);
-
-  const mobilAbone = useCallback((cb: () => void) => {
-    const mq = mobilMedyaAl();
-    mq.addEventListener("change", cb);
-    return () => mq.removeEventListener("change", cb);
-  }, []);
-  const mobil = useSyncExternalStore(
-    mobilAbone,
-    () => mobilMedyaAl().matches,
-    () => false
-  );
 
   const bosAbone = useCallback(() => () => {}, []);
   const monte = useSyncExternalStore(
@@ -110,13 +90,6 @@ export default function TurkiyeHaritasi({
     () => true,
     () => false
   );
-
-  useEffect(() => {
-    if (!mobil) return;
-    const gizle = () => setIpucuAcik(false);
-    const t = setTimeout(gizle, 7000);
-    return () => clearTimeout(t);
-  }, [mobil]);
 
   const isaretcilerRef = useRef(new Map<number, { x: number; y: number }>());
   const surukleRef = useRef<{ x: number; y: number } | null>(null);
@@ -444,7 +417,6 @@ export default function TurkiyeHaritasi({
             mod={mod}
             secililer={secililer}
             aktif={aktif}
-            mobil={mobil}
             monte={monte}
             hover={hover}
             puan={puan}
@@ -486,19 +458,13 @@ export default function TurkiyeHaritasi({
         </button>
       </div>
 
-      {mobil && ipucuAcik && gorunum.k <= 1.01 && (
-        <div className="pointer-events-none absolute bottom-3 left-1/2 z-20 -translate-x-1/2 whitespace-nowrap rounded-full bg-slate-900/80 px-3.5 py-1.5 text-xs font-medium text-white backdrop-blur">
-          İki parmakla yakınlaştır · çift dokun: yakınlaş
-        </div>
-      )}
-
-      {yakinlastirilabilir && !mobil && (
+      {yakinlastirilabilir && (
         <div className="pointer-events-none absolute bottom-[130px] right-3 z-20 rounded-md bg-slate-900/75 px-2 py-1 text-xs text-white backdrop-blur">
           %{Math.round(gorunum.k * 100)} · kaydırarak gez
         </div>
       )}
 
-      {hoverIl && fare && !mobil && (
+      {hoverIl && fare && (
         <div
           className="pointer-events-none absolute z-30 w-60 rounded-lg border border-slate-200 bg-white/95 p-3 shadow-lg backdrop-blur"
           style={{
@@ -619,7 +585,6 @@ const HaritaCizim = memo(function HaritaCizim({
   mod,
   secililer,
   aktif,
-  mobil,
   monte,
   hover,
   puan,
@@ -632,7 +597,6 @@ const HaritaCizim = memo(function HaritaCizim({
   mod: Mod;
   secililer: number[];
   aktif: number | null;
-  mobil: boolean;
   monte: boolean;
   hover: number | null;
   puan: number | null;
@@ -722,13 +686,13 @@ const HaritaCizim = memo(function HaritaCizim({
           const alim = alimGetir(il, donem);
           const vurgulu =
             h.plaka === hover || secililer.includes(h.plaka) || h.plaka === aktif;
-          const x = mobil ? (h.mEtiketX ?? h.cx) : (h.etiketX ?? h.cx);
-          const y = mobil ? (h.mEtiketY ?? h.cy) : (h.etiketY ?? h.cy);
-          const tier = mobil ? h.mEtiketTier : h.etiketTier;
+          const x = h.etiketX ?? h.cx;
+          const y = h.etiketY ?? h.cy;
+          const tier = h.etiketTier;
           const soluk = tier === "yok" && !vurgulu;
-          const adBoyut = mobil ? 33 : 14.5;
-          const puanBoyut = mobil ? 30 : 13;
-          const halo = mobil ? 7 : 3;
+          const adBoyut = 14.5;
+          const puanBoyut = 13;
+          const halo = 3;
           const gosterPuan = tier === "tam" || vurgulu;
           const puanMetin =
             mod === "uygunluk" && puan !== null

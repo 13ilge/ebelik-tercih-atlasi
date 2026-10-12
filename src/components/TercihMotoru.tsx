@@ -9,6 +9,7 @@ import type { Mod } from "@/lib/types";
 import AltPanel from "./AltPanel";
 import KaynakModal from "./KaynakModal";
 import Logo from "./Logo";
+import MobilIlArama from "./MobilIlArama";
 import TurkiyeHaritasi from "./TurkiyeHaritasi";
 
 function puanAyristir(s: string): number | null {
@@ -43,6 +44,14 @@ function imlecMedyaAl() {
   return imlecMedya;
 }
 
+let mobilMedya: MediaQueryList | null = null;
+function mobilMedyaAl() {
+  if (!mobilMedya) {
+    mobilMedya = window.matchMedia("(max-width: 767px)");
+  }
+  return mobilMedya;
+}
+
 export default function TercihMotoru() {
   const [donem, setDonem] = useState(meta.varsayilanDonem);
   const [puanMetni, setPuanMetni] = useState("");
@@ -62,6 +71,17 @@ export default function TercihMotoru() {
   const imlecVar = useSyncExternalStore(
     imlecAbone,
     () => imlecMedyaAl().matches,
+    () => false
+  );
+
+  const mobilAbone = useCallback((cb: () => void) => {
+    const mq = mobilMedyaAl();
+    mq.addEventListener("change", cb);
+    return () => mq.removeEventListener("change", cb);
+  }, []);
+  const mobilVar = useSyncExternalStore(
+    mobilAbone,
+    () => mobilMedyaAl().matches,
     () => false
   );
 
@@ -327,19 +347,31 @@ export default function TercihMotoru() {
       </header>
 
       <main className="mx-auto flex w-full max-w-7xl min-h-0 flex-1 flex-col">
-        <div
-          className="min-h-0 flex-1"
-          onMouseEnter={() => setCekmece(false)}
-        >
-          <TurkiyeHaritasi
-            donem={donem}
-            mod={etkinMod}
-            puan={puan}
-            secililer={secililer}
-            aktif={aktif}
-            onSec={ekle}
-          />
-        </div>
+        {mobilVar ? (
+          <div className="shrink-0" onMouseEnter={() => setCekmece(false)}>
+            <MobilIlArama
+              donem={donem}
+              puan={puan}
+              secililer={secililer}
+              aktif={aktif}
+              onSec={ekle}
+            />
+          </div>
+        ) : (
+          <div
+            className="min-h-0 flex-1"
+            onMouseEnter={() => setCekmece(false)}
+          >
+            <TurkiyeHaritasi
+              donem={donem}
+              mod={etkinMod}
+              puan={puan}
+              secililer={secililer}
+              aktif={aktif}
+              onSec={ekle}
+            />
+          </div>
+        )}
         <AltPanel
           secililer={secililer}
           aktif={aktif}
