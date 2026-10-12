@@ -1,0 +1,141 @@
+"use client";
+
+import { useEffect, useRef } from "react";
+import { BookMarked, ExternalLink, X } from "lucide-react";
+import { kaynakBilgileri, meta } from "@/lib/data";
+
+export default function KaynakModal({
+  acik,
+  kapat,
+}: {
+  acik: boolean;
+  kapat: () => void;
+}) {
+  const modalRef = useRef<HTMLDivElement>(null);
+  const kapatRef = useRef(kapat);
+  const oncekiOdakRef = useRef<HTMLElement | null>(null);
+
+  useEffect(() => {
+    kapatRef.current = kapat;
+  }, [kapat]);
+
+  useEffect(() => {
+    if (!acik) return;
+    oncekiOdakRef.current =
+      document.activeElement instanceof HTMLElement
+        ? document.activeElement
+        : null;
+    const govdeOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    modalRef.current?.focus();
+
+    const tusla = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        kapatRef.current();
+        return;
+      }
+      if (e.key !== "Tab" || !modalRef.current) return;
+      const odaklanabilirler = modalRef.current.querySelectorAll<HTMLElement>(
+        'a[href], button:not([disabled]), input, select, textarea, [tabindex]:not([tabindex="-1"])'
+      );
+      if (odaklanabilirler.length === 0) return;
+      const ilk = odaklanabilirler[0];
+      const son = odaklanabilirler[odaklanabilirler.length - 1];
+      if (e.shiftKey && document.activeElement === ilk) {
+        e.preventDefault();
+        son.focus();
+      } else if (!e.shiftKey && document.activeElement === son) {
+        e.preventDefault();
+        ilk.focus();
+      }
+    };
+    document.addEventListener("keydown", tusla);
+    return () => {
+      document.removeEventListener("keydown", tusla);
+      document.body.style.overflow = govdeOverflow;
+      oncekiOdakRef.current?.focus();
+    };
+  }, [acik]);
+
+  if (!acik) return null;
+
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 p-4 backdrop-blur-sm"
+      onClick={() => kapatRef.current()}
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="kaynak-baslik"
+    >
+      <div
+        ref={modalRef}
+        tabIndex={-1}
+        className="max-h-[82dvh] w-full max-w-2xl overflow-y-auto rounded-2xl bg-white p-5 shadow-2xl outline-none"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="mb-4 flex items-start justify-between gap-4">
+          <div>
+            <h2
+              id="kaynak-baslik"
+              className="flex items-center gap-2 text-lg font-bold text-slate-900"
+            >
+              <BookMarked className="h-5 w-5 text-sky-600" />
+              Veri kaynakları ve uyarı
+            </h2>
+            <p className="mt-1 text-xs text-slate-500">
+              Son veri derlemesi: {meta.insaTarihi}
+            </p>
+          </div>
+          <button
+            onClick={() => kapatRef.current()}
+            aria-label="Kapat"
+            className="rounded-lg p-1.5 text-slate-400 transition hover:bg-slate-100 hover:text-slate-700"
+          >
+            <X className="h-5 w-5" />
+          </button>
+        </div>
+
+        <p className="rounded-xl border border-amber-200 bg-amber-50 p-3 text-sm leading-relaxed text-amber-900">
+          {kaynakBilgileri.uyari}
+        </p>
+
+        <ul className="mt-4 space-y-2">
+          {kaynakBilgileri.kaynaklar.map((k) => (
+            <li
+              key={k.url}
+              className="rounded-xl border border-slate-200 p-3 transition hover:border-sky-200 hover:bg-sky-50/40"
+            >
+              <a
+                href={k.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-start justify-between gap-3"
+              >
+                <span>
+                  <span className="block text-base font-semibold text-slate-900">
+                    {k.baslik}
+                  </span>
+                  <span className="mt-0.5 block text-xs text-slate-500">
+                    {k.aciklama}
+                  </span>
+                </span>
+                <span className="flex shrink-0 items-center gap-1 text-xs text-sky-700">
+                  {k.tarih}
+                  <ExternalLink className="h-3 w-3" />
+                </span>
+              </a>
+            </li>
+          ))}
+        </ul>
+
+        <p className="mt-4 text-xs leading-relaxed text-slate-400">
+          Bu proje bağımsız bir bilgilendirme aracıdır. Taban puanlar ilgili
+          atama döneminde o ile yerleşen adayların en düşük puanını gösterir ve
+          sonraki dönemler için bağlayıcı değildir. Doğum ve nüfus verileri
+          TÜİK, kira verileri Endeksa derlemesi, hastane listeleri Sağlık
+          Bakanlığı kaynaklarından alınmıştır.
+        </p>
+      </div>
+    </div>
+  );
+}

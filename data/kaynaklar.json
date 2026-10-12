@@ -1,0 +1,59 @@
+{
+  "uyari": "Bu sitedeki veriler kamuya açık kaynaklardan derlenmiştir; resmî atama/tercih kaynağı değildir. Tercih yapmadan önce ÖSYM ve Sağlık Bakanlığı'nın resmî duyurularını esas alın. Taban puanlar ilgili dönemde o ile yerleşen en düşük puanı gösterir ve sonraki dönemler için kesinlik taşımaz.",
+  "kaynaklar": [
+    {
+      "baslik": "Ebe atama taban puanları (KPSS-2024/5)",
+      "aciklama": "Sağlık Bakanlığı 2024/5 dönemi ebe (lisans) kadro bazlı yerleştirme sonuçları; il bazlı en düşük puanlar iki bağımsız derlemede çapraz doğrulandı.",
+      "url": "https://universitenitanit.com/makale/oku/ebe-atama-taban-puanlari-ve-alimlar-kpss-lisans",
+      "tarih": "Mart 2024"
+    },
+    {
+      "baslik": "Ebe atama taban puanları (KPSS-2024/5) — çapraz doğrulama",
+      "aciklama": "Aynı dönemin il bazlı taban puan listesi; 81 ilde birbirini doğruluyor.",
+      "url": "https://kazanabilirsin.com/ebelik-atama-puanlari-kpss-2024",
+      "tarih": "Mart 2024"
+    },
+    {
+      "baslik": "Ebe atama taban puanları (KPSS-2025/4)",
+      "aciklama": "2025/4 dönemi ebe (lisans) il bazlı taban puan ve kontenjan derlemesi. İstanbul verisi ikinci kaynakla doğrulandı.",
+      "url": "https://sonatamalar.com/atama/ebelik-lisans",
+      "tarih": "2025"
+    },
+    {
+      "baslik": "Ebe atama taban puanları (KPSS-2025/5)",
+      "aciklama": "2025/5 dönemi ebe (lisans) il bazlı taban puan ve kontenjan derlemesi; 805 kadro.",
+      "url": "https://www.eleman.net/kpss-kilavuzu/ebelik/atama-puanlari",
+      "tarih": "Ekim 2025"
+    },
+    {
+      "baslik": "Doğum İstatistikleri, 2025",
+      "aciklama": "İl bazlı canlı doğum sayıları ve nüfus verileri (TÜİK bülteni, veri portali).",
+      "url": "https://veriportali.tuik.gov.tr/tr/press/58018",
+      "tarih": "21 Mayıs 2026"
+    },
+    {
+      "baslik": "ADNKS Nüfus Sonuçları, 2025",
+      "aciklama": "İl nüfusları, 31 Aralık 2025.",
+      "url": "https://veriportali.tuik.gov.tr/tr/press/53899",
+      "tarih": "9 Şubat 2026"
+    },
+    {
+      "baslik": "Ortalama kira verileri (Endeksa derlemesi)",
+      "aciklama": "81 il ortalama konut kirası; Endeksa verilerinin basına yansıyan derlemesi.",
+      "url": "https://kayserihaber.com.tr/haber/turkiye_genelinde_kira_fiyatlari_ortalamasi_aciklandi_kayseri_bakin_kacinci_sirada-88083",
+      "tarih": "Ağustos-Eylül 2025"
+    },
+    {
+      "baslik": "Kamu hastaneleri listesi (2. ve 3. basamak)",
+      "aciklama": "SB Kamu Hastaneleri Genel Müdürlüğü tesisi listesi (01.02.2022 güncellemesi, 745 tesis) + 2022–2026 arası yeni açılan kamu hastaneleri (şehir hastaneleri ve yeni devlet hastaneleri dahil).",
+      "url": "https://khgm.saglik.gov.tr/",
+      "tarih": "Şubat 2022 + yeni açılışlar"
+    },
+    {
+      "baslik": "Devlet üniversitesi hastaneleri",
+      "aciklama": "Devlet üniversitelerinin tıp fakültesi hastaneleri (45 tesis); her biri üniversitelerin resmî sitelerinden doğrulanmıştır. Sağlık Bakanlığı'na bağlı afiliye EAH'ler KHGM listesinde ayrıca yer alır.",
+      "url": "https://www.yok.gov.tr/",
+      "tarih": "2026"
+    }
+  ]
+}

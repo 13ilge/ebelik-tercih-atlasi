@@ -1,36 +1,58 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Ebelik Tercih Atlası
 
-## Getting Started
+KPSS ebelik (lisans / P3) atamaları için interaktif tercih atlası. 81 ilin taban puanlarını, kontenjanlarını ve şehir yaşam verilerini tek haritada toplar; adayların puanına göre ulaşabileceği illeri görmesini ve sıralı bir tercih listesi oluşturmasını sağlar.
 
-First, run the development server:
+## Özellikler
+
+- **İnteraktif Türkiye haritası**: il bazlı taban puan ısı haritası, "puanına göre uygunluk" modu, zoom/pan (mobilde çift dokunma ve pinch)
+- **İl paneli**: dönemlere göre taban puan ve kontenjan, ortalama kira, TÜİK doğum/nüfus verileri, kamu hastaneleri listesi, verilerden üretilen artı/eksiler
+- **Tercih listesi**: sürükle-bırak sıralama, "puanıma göre sırala", kalıcılık (localStorage)
+- **Karşılaştırma tablosu**: seçilen illeri yan yana, kaydırmalı tablo
+- **Dışa aktarma**: paylaşım bağlantısı, PNG, yazdır/PDF
+- **İl sayfaları**: 81 il için SEO uyumlu statik sayfa (`/il/ankara`), sitemap ve robots
+
+## Kurulum
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Uygulama `http://localhost:3000` adresinde açılır.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Veri
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Veriler `data/` klasöründeki ham dosyalardan derlenir ve `src/data/*.generated.json` olarak üretilir:
 
-## Learn More
+| Komut | Ne yapar |
+| --- | --- |
+| `npm run veri:khgm` | Sağlık Bakanlığı KHGM tesis listesini (xls) işler |
+| `npm run veri:harita` | İl sınırı GeoJSON'unu SVG etiket yerleşimine dönüştürür |
+| `npm run veri:derle` | Tüm ham verileri tekilleştirir ve `provinces.generated.json` üretir |
+| `npm run veri:hepsi` | Üç adımı sırayla çalıştırır |
 
-To learn more about Next.js, take a look at the following resources:
+Yeni atama dönemi eklemek için `data/kpss.json` dosyasına kayıt ekleyip `npm run veri:derle` çalıştırmak yeterlidir.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Veri kaynakları
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- Taban puanlar: Sağlık Bakanlığı atama sonuçları (kamuya açık derlemeler; 2024/5 iki bağımsız kaynakla doğrulandı)
+- Doğum ve nüfus: TÜİK (Doğum İstatistikleri 2025, ADNKS 2025)
+- Kira: Endeksa derlemesi (Ağustos–Eylül 2025)
+- Hastaneler: SB KHGM 2.-3. basamak listesi (2022) + 2022–2026 yeni açılışlar + devlet üniversitesi hastaneleri
 
-## Deploy on Vercel
+Veriler bilgilendirme amaçlıdır; resmî tercih kaynağı değildir. Tercih öncesi ÖSYM ve Sağlık Bakanlığı duyurularını esas alın.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Ortam değişkenleri
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+| Değişken | Açıklama |
+| --- | --- |
+| `NEXT_PUBLIC_SITE_URL` | Yayın adresi (canonical, sitemap, robots). Verilmezse Vercel adresi, o da yoksa `http://localhost:3000` kullanılır. |
+
+## Komutlar
+
+```bash
+npm run dev      # geliştirme sunucusu
+npm run build    # üretim derlemesi
+npm run lint     # ESLint
+npm run veri:hepsi  # veri hattı
+```
