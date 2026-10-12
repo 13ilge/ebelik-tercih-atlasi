@@ -260,6 +260,7 @@ export default function AltPanel({
                 <button
                   onClick={baglantiKopyala}
                   title="Tercih listesi bağlantısını kopyala"
+                  aria-label="Bağlantıyı kopyala"
                   className={`flex items-center gap-1.5 rounded-lg border px-3 py-2 text-sm font-medium transition ${
                     kopyalandi
                       ? "border-emerald-200 bg-emerald-50 text-emerald-700"
@@ -271,38 +272,43 @@ export default function AltPanel({
                   ) : (
                     <Link2 className="h-4 w-4" />
                   )}
-                  {kopyalandi ? "Kopyalandı" : "Bağlantı"}
+                  <span className="hidden sm:inline">
+                    {kopyalandi ? "Kopyalandı" : "Bağlantı"}
+                  </span>
                 </button>
                 <button
                   onClick={pngIndir}
                   title="Listeyi PNG olarak indir"
+                  aria-label="PNG indir"
                   className="flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-600 transition hover:border-slate-300 hover:text-slate-900"
                 >
                   <Download className="h-4 w-4" />
-                  PNG
+                  <span className="hidden sm:inline">PNG</span>
                 </button>
                 <button
                   onClick={yazdir}
                   title="Yazdır / PDF olarak kaydet"
+                  aria-label="Yazdır"
                   className="flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-600 transition hover:border-slate-300 hover:text-slate-900"
                 >
                   <Printer className="h-4 w-4" />
-                  Yazdır
+                  <span className="hidden sm:inline">Yazdır</span>
                 </button>
                 <button
                   onClick={onTemizle}
                   title="Seçimi temizle"
+                  aria-label="Seçimi temizle"
                   className="flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-500 transition hover:border-red-200 hover:bg-red-50 hover:text-red-700"
                 >
                   <Trash2 className="h-4 w-4" />
-                  Temizle
+                  <span className="hidden sm:inline">Temizle</span>
                 </button>
               </div>
             </div>
 
             <div className="flex flex-col gap-3 lg:flex-row lg:items-start">
             <aside
-              className={`w-full shrink-0 rounded-xl border border-slate-200 bg-white p-3 shadow-sm lg:flex lg:w-80 lg:flex-col ${
+              className={`order-2 w-full shrink-0 rounded-xl border border-slate-200 bg-white p-3 shadow-sm lg:order-1 lg:flex lg:w-80 lg:flex-col ${
                 genis
                   ? "lg:max-h-[calc(76dvh-2rem)]"
                   : "lg:max-h-[calc(50dvh-2rem)]"
@@ -407,7 +413,7 @@ export default function AltPanel({
               </p>
             </aside>
 
-            <div className="min-w-0 flex-1">
+            <div className="order-1 min-w-0 flex-1 lg:order-2">
               {karsilastir && secililer.length >= 2 ? (
                 <KarsilastirmaTablosu
                   plakalar={secililer}

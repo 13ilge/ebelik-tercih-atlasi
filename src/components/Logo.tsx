@@ -1,9 +1,11 @@
 export default function Logo({
   boyut = "lg",
   altBaslik,
+  mobildeGizle,
 }: {
   boyut?: "lg" | "sm";
   altBaslik?: string;
+  mobildeGizle?: boolean;
 }) {
   const metin = boyut === "lg" ? "text-2xl" : "text-lg";
   return (
@@ -14,7 +16,11 @@ export default function Logo({
         Ebelik Tercih <span className="text-sky-700">Atlası</span>
       </span>
       {altBaslik ? (
-        <span className="mt-0.5 text-xs font-normal text-slate-500">
+        <span
+          className={`mt-0.5 text-xs font-normal text-slate-500 ${
+            mobildeGizle ? "max-sm:hidden" : ""
+          }`}
+        >
           {altBaslik}
         </span>
       ) : null}

@@ -87,6 +87,7 @@ export default function TurkiyeHaritasi({
   const fareSonRef = useRef<FareKonum | null>(null);
   const fareRafRef = useRef<number | null>(null);
   const [gorunum, setGorunum] = useState<Gorunum>({ k: 1, x: 0, y: 0 });
+  const [ipucuAcik, setIpucuAcik] = useState(true);
   const gorunumRef = useRef(gorunum);
   useEffect(() => {
     gorunumRef.current = gorunum;
@@ -109,6 +110,13 @@ export default function TurkiyeHaritasi({
     () => true,
     () => false
   );
+
+  useEffect(() => {
+    if (!mobil) return;
+    const gizle = () => setIpucuAcik(false);
+    const t = setTimeout(gizle, 7000);
+    return () => clearTimeout(t);
+  }, [mobil]);
 
   const isaretcilerRef = useRef(new Map<number, { x: number; y: number }>());
   const surukleRef = useRef<{ x: number; y: number } | null>(null);
@@ -413,7 +421,12 @@ export default function TurkiyeHaritasi({
           yakinlastirilabilir ? "cursor-grab active:cursor-grabbing" : ""
         }`}
         preserveAspectRatio="xMidYMid meet"
-        style={{ touchAction: "none" }}
+        style={
+          {
+            touchAction: "none",
+            "--zoom": gorunum.k,
+          } as React.CSSProperties
+        }
         role="group"
         aria-label="Türkiye ebe atama taban puanları haritası"
         onPointerDown={isaretciBasla}
@@ -473,13 +486,19 @@ export default function TurkiyeHaritasi({
         </button>
       </div>
 
+      {mobil && ipucuAcik && gorunum.k <= 1.01 && (
+        <div className="pointer-events-none absolute bottom-3 left-1/2 z-20 -translate-x-1/2 whitespace-nowrap rounded-full bg-slate-900/80 px-3.5 py-1.5 text-xs font-medium text-white backdrop-blur">
+          İki parmakla yakınlaştır · çift dokun: yakınlaş
+        </div>
+      )}
+
       {yakinlastirilabilir && !mobil && (
         <div className="pointer-events-none absolute bottom-[130px] right-3 z-20 rounded-md bg-slate-900/75 px-2 py-1 text-xs text-white backdrop-blur">
           %{Math.round(gorunum.k * 100)} · kaydırarak gez
         </div>
       )}
 
-      {hoverIl && fare && (
+      {hoverIl && fare && !mobil && (
         <div
           className="pointer-events-none absolute z-30 w-60 rounded-lg border border-slate-200 bg-white/95 p-3 shadow-lg backdrop-blur"
           style={{
@@ -706,7 +725,7 @@ const HaritaCizim = memo(function HaritaCizim({
           const x = mobil ? (h.mEtiketX ?? h.cx) : (h.etiketX ?? h.cx);
           const y = mobil ? (h.mEtiketY ?? h.cy) : (h.etiketY ?? h.cy);
           const tier = mobil ? h.mEtiketTier : h.etiketTier;
-          if (tier === "yok" && !vurgulu) return null;
+          const soluk = tier === "yok" && !vurgulu;
           const adBoyut = mobil ? 33 : 14.5;
           const puanBoyut = mobil ? 30 : 13;
           const halo = mobil ? 7 : 3;
@@ -733,6 +752,9 @@ const HaritaCizim = memo(function HaritaCizim({
                 stroke: "#ffffff",
                 strokeWidth: halo,
                 strokeLinejoin: "round",
+                opacity: soluk
+                  ? "clamp(0, calc((var(--zoom, 1) - 1.8) * 2), 1)"
+                  : 1,
               }}
             >
               {il.ad}

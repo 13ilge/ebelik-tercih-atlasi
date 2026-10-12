@@ -197,18 +197,21 @@ export default function TercihMotoru() {
       </a>
       <header
         onMouseEnter={() => setCekmece(false)}
-        className="z-30 border-b border-slate-200 bg-white/95 px-3 py-2.5 backdrop-blur sm:px-4"
+        className="z-30 border-b border-slate-200 bg-white/95 px-3 py-2 backdrop-blur sm:px-4 sm:py-2.5"
       >
         <div className="mx-auto flex w-full max-w-7xl flex-wrap items-center gap-x-4 gap-y-2">
           <Link href="/" className="shrink-0" aria-label="Ebelik Tercih Atlası ana sayfa">
             <h1>
-              <Logo altBaslik="KPSS lisans (P3) ebelik atamaları · 81 il" />
+              <Logo
+                mobildeGizle
+                altBaslik="KPSS lisans (P3) ebelik atamaları · 81 il"
+              />
             </h1>
           </Link>
 
           <div className="flex w-full flex-wrap items-center gap-x-4 gap-y-2 lg:ml-auto lg:w-auto">
             <div className="flex items-center gap-2">
-              <span className="text-sm font-medium text-slate-500">
+              <span className="text-sm font-medium text-slate-500 max-sm:sr-only">
                 Atama dönemi
               </span>
               <div
@@ -243,7 +246,7 @@ export default function TercihMotoru() {
 
             <div className="flex items-center gap-2">
               <label className="flex items-center gap-2">
-                <span className="text-sm font-medium text-slate-500">
+                <span className="text-sm font-medium text-slate-500 max-sm:sr-only">
                   KPSS P3 puanın
                 </span>
                 <span className="relative">
@@ -313,10 +316,11 @@ export default function TercihMotoru() {
 
             <button
               onClick={() => setKaynakAcik(true)}
-              className="flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-sm font-medium text-slate-600 transition hover:border-sky-300 hover:text-sky-800"
+              aria-label="Veri ve kaynaklar"
+              className="flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-2.5 py-2 text-sm font-medium text-slate-700 transition hover:border-sky-300 hover:text-sky-800 sm:px-3 sm:py-1.5"
             >
-              <BookMarked className="h-3.5 w-3.5" />
-              Veri ve kaynaklar
+              <BookMarked className="h-4 w-4" />
+              <span className="hidden sm:inline">Veri ve kaynaklar</span>
             </button>
           </div>
         </div>
