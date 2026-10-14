@@ -22,7 +22,9 @@ export interface Il {
   nufusYil: number;
   dogum: number;
   dogumYil: number;
-  kira: number;
+  kira: number | null;
+  gocHizi: number;
+  gocYil: number;
   hastaneler: Hastane[];
   alimlar: Alim[];
 }
@@ -32,6 +34,7 @@ export interface Meta {
   dogumYil: number;
   nufusYil: number;
   kiraDonem: string;
+  gocYil: number;
   donemler: string[];
   kadroToplam: Record<string, number>;
   varsayilanDonem: string;

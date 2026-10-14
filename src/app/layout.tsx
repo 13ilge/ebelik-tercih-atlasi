@@ -1,5 +1,9 @@
 import type { Metadata, Viewport } from "next";
-import { Atkinson_Hyperlegible, Playfair_Display } from "next/font/google";
+import {
+  Atkinson_Hyperlegible,
+  IBM_Plex_Mono,
+  Inter,
+} from "next/font/google";
 import { SITE_URL } from "@/lib/site";
 import "./globals.css";
 
@@ -9,10 +13,16 @@ const atkinson = Atkinson_Hyperlegible({
   weight: ["400", "700"],
 });
 
-const playfair = Playfair_Display({
-  variable: "--font-playfair",
+const inter = Inter({
+  variable: "--font-inter",
   subsets: ["latin", "latin-ext"],
-  weight: ["600", "700"],
+  weight: ["500", "600", "700"],
+});
+
+const plexMono = IBM_Plex_Mono({
+  variable: "--font-plex-mono",
+  subsets: ["latin", "latin-ext"],
+  weight: ["400", "500", "600"],
 });
 
 const BASLIK =
@@ -43,13 +53,30 @@ export const viewport: Viewport = {
   themeColor: "#0369a1",
 };
 
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  name: "Ebelik Tercih Atlası",
+  url: SITE_URL,
+  inLanguage: "tr",
+  description: ACIKLAMA,
+};
+
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="tr"
-      className={`${atkinson.variable} ${playfair.variable} h-full antialiased`}
+      className={`${atkinson.variable} ${inter.variable} ${plexMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full bg-slate-50 text-slate-950">{children}</body>
+      <body className="min-h-full bg-slate-50 text-slate-950">
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c"),
+          }}
+        />
+        {children}
+      </body>
     </html>
   );
 }

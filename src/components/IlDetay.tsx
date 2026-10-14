@@ -16,6 +16,7 @@ import {
   genelPuanAraligi,
   ilSlug,
   medyanKira,
+  meta,
   tabanYuzdeligi,
   trDogumOrani,
 } from "@/lib/data";
@@ -56,18 +57,19 @@ export default function IlDetay({
   });
   const artilar = oneriler.filter((o) => o.arti);
   const eksiler = oneriler.filter((o) => !o.arti);
-  const kiraOran = il.kira / medyanKira;
+  const kiraOran = il.kira !== null ? il.kira / medyanKira : null;
   const kdHastaneler = il.hastaneler.filter((h) => h.tur === "kdd");
 
   return (
     <div className="space-y-3">
       <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
-        <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-slate-900 text-sm font-bold text-white">
+        <span className="font-mono text-sm font-semibold tabular-nums text-slate-500">
           {il.plaka.toString().padStart(2, "0")}
         </span>
         <h2 className="text-xl font-bold text-slate-900">{il.ad}</h2>
-        <Rozet ton="sky">{il.bolge}</Rozet>
-        <Rozet>Nüfus: {sayi(il.nufus)}</Rozet>
+        <span className="rounded-md bg-sky-50 px-2 py-0.5 text-xs font-medium text-sky-800">
+          {il.bolge}
+        </span>
         <div className="ml-auto flex items-center gap-2">
           <Link
             href={`/il/${ilSlug(il)}`}
@@ -186,11 +188,23 @@ export default function IlDetay({
           <div className="grid grid-cols-2 gap-2">
             <IstatistikKutusu
               etiket="Ortalama kira"
-              deger={tl(il.kira)}
-              alt={`TR ort. ${sayi(medyanKira)} TL'nin ${yuzde(
-                Math.abs(1 - kiraOran)
-              )} ${kiraOran <= 1 ? "altında" : "üzerinde"} · Endeksa 2025`}
-              vurgu={kiraOran <= 0.8 ? "iyi" : kiraOran >= 1.2 ? "kotu" : undefined}
+              deger={il.kira !== null ? tl(il.kira) : "—"}
+              alt={
+                il.kira !== null && kiraOran !== null
+                  ? `TR ort. ${sayi(medyanKira)} TL'nin ${yuzde(
+                      Math.abs(1 - kiraOran)
+                    )} ${kiraOran <= 1 ? "altında" : "üzerinde"} · Endeksa verisi (${meta.kiraDonem})`
+                  : `Endeksa'da bu il için veri yok (${meta.kiraDonem})`
+              }
+              vurgu={
+                kiraOran === null
+                  ? undefined
+                  : kiraOran <= 0.8
+                    ? "iyi"
+                    : kiraOran >= 1.2
+                      ? "kotu"
+                      : undefined
+              }
             />
             <IstatistikKutusu
               etiket="Doğum oranı"
@@ -203,7 +217,14 @@ export default function IlDetay({
               deger={sayi(il.nufus)}
               alt={`TÜİK ADNKS ${il.nufusYil}`}
             />
-            <IstatistikKutusu etiket="Bölge" deger={il.bolge} />
+            <IstatistikKutusu
+              etiket="Net göç hızı"
+              deger={`${isaretli(il.gocHizi)}‰`}
+              alt={`binde · TÜİK ${il.gocYil}`}
+              vurgu={
+                il.gocHizi >= 5 ? "iyi" : il.gocHizi <= -5 ? "kotu" : undefined
+              }
+            />
           </div>
         </Kart>
 
@@ -268,7 +289,11 @@ export default function IlDetay({
           baslik="Artılar"
           icon={ThumbsUp}
           className="lg:col-span-3"
-          ekstra={<Rozet ton="yesil">{artilar.length} madde</Rozet>}
+          ekstra={
+            <span className="rounded-md bg-emerald-50 px-2 py-0.5 text-xs font-medium tabular-nums text-emerald-700">
+              {artilar.length} madde
+            </span>
+          }
         >
           {artilar.length === 0 ? (
             <p className="text-xs text-slate-400">Öne çıkan artı bulunamadı.</p>
@@ -291,7 +316,11 @@ export default function IlDetay({
           baslik="Eksiler"
           icon={ThumbsDown}
           className="lg:col-span-3"
-          ekstra={<Rozet ton="kirmizi">{eksiler.length} madde</Rozet>}
+          ekstra={
+            <span className="rounded-md bg-red-50 px-2 py-0.5 text-xs font-medium tabular-nums text-red-700">
+              {eksiler.length} madde
+            </span>
+          }
         >
           {eksiler.length === 0 ? (
             <p className="text-xs text-slate-400">Öne çıkan eksi bulunamadı.</p>

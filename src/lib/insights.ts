@@ -1,5 +1,5 @@
 import type { Il } from "./types";
-import { puanStr, sayi } from "./format";
+import { isaretli, puanStr, sayi } from "./format";
 
 export interface Oneri {
   arti: boolean;
@@ -18,25 +18,27 @@ export function ilOnerileri(il: Il, ctx: OneriBaglami): Oneri[] {
   const artilar: Oneri[] = [];
   const eksiler: Oneri[] = [];
 
-  const kiraOran = il.kira / ctx.medyanKira;
-  if (kiraOran <= 0.8) {
-    artilar.push({
-      arti: true,
-      metin: `Ortalama kira Türkiye ortalamasının %${Math.round(
-        (1 - kiraOran) * 100
-      )} altında (~${sayi(il.kira)} TL; TR ort. ~${sayi(
-        ctx.medyanKira
-      )} TL — Endeksa, Ağu–Eyl 2025)`,
-    });
-  } else if (kiraOran >= 1.2) {
-    eksiler.push({
-      arti: false,
-      metin: `Ortalama kira Türkiye ortalamasının %${Math.round(
-        (kiraOran - 1) * 100
-      )} üzerinde (~${sayi(il.kira)} TL; TR ort. ~${sayi(
-        ctx.medyanKira
-      )} TL — Endeksa, Ağu–Eyl 2025)`,
-    });
+  if (il.kira !== null) {
+    const kiraOran = il.kira / ctx.medyanKira;
+    if (kiraOran <= 0.8) {
+      artilar.push({
+        arti: true,
+        metin: `Ortalama kira Türkiye ortalamasının %${Math.round(
+          (1 - kiraOran) * 100
+        )} altında (~${sayi(il.kira)} TL; TR ort. ~${sayi(
+          ctx.medyanKira
+        )} TL — Endeksa, Eylül 2026)`,
+      });
+    } else if (kiraOran >= 1.2) {
+      eksiler.push({
+        arti: false,
+        metin: `Ortalama kira Türkiye ortalamasının %${Math.round(
+          (kiraOran - 1) * 100
+        )} üzerinde (~${sayi(il.kira)} TL; TR ort. ~${sayi(
+          ctx.medyanKira
+        )} TL — Endeksa, Eylül 2026)`,
+      });
+    }
   }
 
   if (il.dogum >= 12000) {
@@ -77,6 +79,22 @@ export function ilOnerileri(il: Il, ctx: OneriBaglami): Oneri[] {
         metin: `Taban puan (${puanStr(ctx.taban)}) o dönemin en yüksek çeyreğinde — rekabet yoğun`,
       });
     }
+  }
+
+  if (il.gocHizi >= 5) {
+    artilar.push({
+      arti: true,
+      metin: `Son yılda net göç alıyor (binde ${isaretli(
+        il.gocHizi
+      )}; TÜİK ${il.gocYil}) — şehir nüfus çekiyor`,
+    });
+  } else if (il.gocHizi <= -5) {
+    eksiler.push({
+      arti: false,
+      metin: `Son yılda net göç veriyor (binde ${isaretli(
+        il.gocHizi
+      )}; TÜİK ${il.gocYil}) — şehir nüfus kaybediyor`,
+    });
   }
 
   const kadinDogumlar = il.hastaneler.filter((h) => h.tur === "kdd");

@@ -15,8 +15,9 @@ import {
   trDogumOrani,
 } from "@/lib/data";
 import { HASTANE_RENK, HASTANE_TUR_ADI } from "@/lib/colors";
-import { puanStr, sayi, tl } from "@/lib/format";
+import { puanStr, sayi, tarihStr, tl } from "@/lib/format";
 import { ilOnerileri } from "@/lib/insights";
+import { SITE_URL } from "@/lib/site";
 import Logo from "@/components/Logo";
 
 export const instant = false;
@@ -35,9 +36,9 @@ export async function generateMetadata(
   const ilBaslik = `${il.ad} Ebe Taban Puanı ${son.donem} (${puanStr(son.taban)}) — Kontenjan ve Şehir Bilgileri`;
   const ilAciklama = `${il.ad} için KPSS ebelik (lisans) atama taban puanları: son dönem ${son.donem}, ${puanStr(
     son.taban
-  )} puan ve ${son.kontenjan} kadro. Ortalama kira ${tl(
-    il.kira
-  )}; TÜİK ${il.dogumYil}: ${sayi(
+  )} puan ve ${son.kontenjan} kadro.${
+    il.kira !== null ? ` Ortalama kira ${tl(il.kira)};` : ""
+  } TÜİK ${il.dogumYil}: ${sayi(
     il.dogum
   )} canlı doğum. ${il.hastaneler.length} kamu hastanesi listesi ve şehir yaşam verileri.`;
   return {
@@ -86,8 +87,47 @@ export default async function IlSayfasi(props: PageProps<"/il/[slug]">) {
     .sort((a, b) => a.ad.localeCompare(b.ad, "tr"))
     .slice(0, 10);
 
+  const ilUrl = `${SITE_URL}/il/${slug}`;
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    name: `${il.ad} Ebe Taban Puanı ${son.donem} (${puanStr(son.taban)})`,
+    description: `${il.ad} için KPSS ebelik (lisans) atama taban puanları, ${il.bolge} bölgesi şehir yaşam verileri ve kamu hastaneleri listesi.`,
+    url: ilUrl,
+    inLanguage: "tr",
+    dateModified: meta.insaTarihi,
+    isPartOf: {
+      "@type": "WebSite",
+      name: "Ebelik Tercih Atlası",
+      url: SITE_URL,
+    },
+    breadcrumb: {
+      "@type": "BreadcrumbList",
+      itemListElement: [
+        {
+          "@type": "ListItem",
+          position: 1,
+          name: "Harita",
+          item: SITE_URL,
+        },
+        {
+          "@type": "ListItem",
+          position: 2,
+          name: il.ad,
+          item: ilUrl,
+        },
+      ],
+    },
+  };
+
   return (
     <div className="min-h-dvh bg-slate-50">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c"),
+        }}
+      />
       <header className="border-b border-slate-200 bg-white">
         <div className="mx-auto flex w-full max-w-5xl flex-wrap items-center gap-3 px-4 py-3">
           <Link
@@ -113,7 +153,7 @@ export default async function IlSayfasi(props: PageProps<"/il/[slug]">) {
 
       <main className="mx-auto w-full max-w-5xl px-4 py-6">
         <div className="flex flex-wrap items-center gap-3">
-          <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-slate-900 text-base font-bold text-white">
+          <span className="font-mono text-lg font-semibold tabular-nums text-slate-500">
             {il.plaka.toString().padStart(2, "0")}
           </span>
           <h1 className="text-2xl font-bold tracking-tight text-slate-950 sm:text-3xl">
@@ -173,10 +213,12 @@ export default async function IlSayfasi(props: PageProps<"/il/[slug]">) {
               Ortalama kira
             </div>
             <div className="mt-1 text-3xl font-bold tabular-nums text-slate-950">
-              {tl(il.kira)}
+              {il.kira !== null ? tl(il.kira) : "—"}
             </div>
             <div className="mt-1 text-xs text-slate-500">
-              TR ort. {tl(medyanKira)} · Endeksa 2025
+              {il.kira !== null
+                ? `TR ort. ${tl(medyanKira)} · Endeksa verisi (${meta.kiraDonem})`
+                : `Endeksa'da bu il için veri yok (${meta.kiraDonem})`}
             </div>
           </div>
         </div>
@@ -338,7 +380,14 @@ export default async function IlSayfasi(props: PageProps<"/il/[slug]">) {
         <div className="mx-auto w-full max-w-5xl px-4 text-xs text-slate-500">
           Ebelik Tercih Atlası — KPSS lisans (P3) ebelik atamaları için bağımsız
           bilgilendirme aracı. Veriler kamuya açık kaynaklardan derlenmiştir;
-          tercih öncesi ÖSYM ve Sağlık Bakanlığı duyurularını esas alın.
+          tercih öncesi ÖSYM ve Sağlık Bakanlığı duyurularını esas alın. Son
+          veri derlemesi: {tarihStr(meta.insaTarihi)}.{" "}
+          <Link
+            href="/gizlilik"
+            className="font-medium text-sky-800 underline underline-offset-2 hover:text-sky-900"
+          >
+            Gizlilik
+          </Link>
         </div>
       </footer>
     </div>

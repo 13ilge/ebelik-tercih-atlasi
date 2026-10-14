@@ -1,30 +1,29 @@
 "use client";
 
 import { useCallback, useEffect, useState, useSyncExternalStore } from "react";
+import dynamic from "next/dynamic";
 import Link from "next/link";
 import { BookMarked, X } from "lucide-react";
 import { donemKadro, ilHaritasi, meta, slugHaritasi } from "@/lib/data";
 import { sayi } from "@/lib/format";
+import { puanAyristir } from "@/lib/puan";
 import type { Mod } from "@/lib/types";
 import AltPanel from "./AltPanel";
 import KaynakModal from "./KaynakModal";
 import Logo from "./Logo";
 import MobilIlArama from "./MobilIlArama";
-import TurkiyeHaritasi from "./TurkiyeHaritasi";
 
-function puanAyristir(s: string): number | null {
-  const t = s.trim().replace(/\s/g, "");
-  if (!t) return null;
-  let c = t;
-  if (c.includes(",") && c.includes(".")) {
-    c = c.replaceAll(".", "").replace(",", ".");
-  } else {
-    c = c.replace(",", ".");
-  }
-  const n = Number(c);
-  if (!Number.isFinite(n) || n < 40 || n > 100) return null;
-  return n;
-}
+const TurkiyeHaritasi = dynamic(() => import("./TurkiyeHaritasi"), {
+  ssr: false,
+  loading: () => (
+    <div
+      role="status"
+      className="flex h-full items-center justify-center text-sm text-slate-400"
+    >
+      Harita yükleniyor…
+    </div>
+  ),
+});
 
 interface KayitliDurum {
   secililer: number[];
@@ -132,8 +131,8 @@ export default function TercihMotoru() {
       if (donemP && meta.donemler.includes(donemP)) setDonem(donemP);
       const puanP = p.get("puan");
       if (puanP) {
-        const s = Number(puanP.replace(",", "."));
-        if (Number.isFinite(s) && s >= 40 && s <= 100) {
+        const s = puanAyristir(puanP);
+        if (s !== null) {
           setPuanMetni(String(s).replace(".", ","));
           setModDegisken("uygunluk");
         }
@@ -229,7 +228,7 @@ export default function TercihMotoru() {
             </h1>
           </Link>
 
-          <div className="flex w-full flex-wrap items-center gap-x-4 gap-y-2 lg:ml-auto lg:w-auto">
+          <div className="flex w-full flex-wrap items-center gap-x-3 gap-y-2 lg:ml-auto lg:w-auto">
             <div className="flex items-center gap-2">
               <span className="text-sm font-medium text-slate-500 max-sm:sr-only">
                 Atama dönemi
@@ -253,7 +252,7 @@ export default function TercihMotoru() {
                   >
                     {d}
                     <span
-                      className={`hidden sm:inline ml-1 tabular-nums ${
+                      className={`ml-1 hidden tabular-nums 2xl:inline ${
                         d === donem ? "text-slate-300" : "text-slate-400"
                       }`}
                     >
@@ -267,7 +266,7 @@ export default function TercihMotoru() {
             <div className="flex items-center gap-2">
               <label className="flex items-center gap-2">
                 <span className="text-sm font-medium text-slate-500 max-sm:sr-only">
-                  KPSS P3 puanın
+                  KPSS P3
                 </span>
                 <span className="relative">
                   <input
@@ -312,13 +311,14 @@ export default function TercihMotoru() {
                 <button
                   onClick={() => setModDegisken("puan")}
                   aria-pressed={etkinMod === "puan"}
+                  title="Taban puan ısı haritası"
                   className={`rounded-md px-2.5 py-1 text-sm font-medium transition ${
                     etkinMod === "puan"
                       ? "bg-white text-slate-900 shadow-sm"
                       : "text-slate-500 hover:text-slate-700"
                   }`}
                 >
-                  Taban haritası
+                  Taban
                 </button>
                 <button
                   onClick={() => setModDegisken("uygunluk")}
@@ -340,7 +340,7 @@ export default function TercihMotoru() {
               className="flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-2.5 py-2 text-sm font-medium text-slate-700 transition hover:border-sky-300 hover:text-sky-800 sm:px-3 sm:py-1.5"
             >
               <BookMarked className="h-4 w-4" />
-              <span className="hidden sm:inline">Veri ve kaynaklar</span>
+              <span className="hidden xl:inline">Veri ve kaynaklar</span>
             </button>
           </div>
         </div>

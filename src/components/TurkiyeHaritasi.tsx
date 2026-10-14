@@ -10,13 +10,8 @@ import {
   useSyncExternalStore,
 } from "react";
 import { Maximize2, Minus, Plus } from "lucide-react";
-import {
-  alimGetir,
-  dataset,
-  donemIstatistigi,
-  harita,
-  ilHaritasi,
-} from "@/lib/data";
+import { alimGetir, dataset, donemIstatistigi, ilHaritasi } from "@/lib/data";
+import { harita } from "@/lib/harita";
 import {
   ALIM_YOK_RENK,
   PUAN_RAMP,
@@ -477,7 +472,10 @@ export default function TurkiyeHaritasi({
               {hoverIl.ad}
             </span>
             <span className="text-xs text-slate-500">
-              {hoverIl.plaka.toString().padStart(2, "0")} · {hoverIl.bolge}
+              <span className="font-mono tabular-nums">
+                {hoverIl.plaka.toString().padStart(2, "0")}
+              </span>{" "}
+              · {hoverIl.bolge}
             </span>
           </div>
           <div className="mt-2 space-y-1 text-xs text-slate-600">
@@ -499,7 +497,9 @@ export default function TurkiyeHaritasi({
             </div>
             <div className="flex justify-between">
               <span>Ort. kira</span>
-              <span className="tabular-nums">{tl(hoverIl.kira)}</span>
+              <span className="tabular-nums">
+                {hoverIl.kira !== null ? tl(hoverIl.kira) : "veri yok"}
+              </span>
             </div>
           </div>
           <div className="mt-2 border-t border-slate-100 pt-1.5 text-xs font-medium text-sky-700">

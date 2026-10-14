@@ -1,6 +1,6 @@
 import { alimGetir, ilHaritasi } from "@/lib/data";
 import { uygunlukSonucu } from "@/lib/colors";
-import { puanStr, sayi, tl } from "@/lib/format";
+import { isaretli, puanStr, sayi, tl } from "@/lib/format";
 import type { Il } from "@/lib/types";
 
 interface Satir {
@@ -64,7 +64,20 @@ export default function KarsilastirmaTablosu({
       etiket: "Ortalama kira",
       sayi: (il) => il.kira,
       yon: "dusuk",
-      deger: (il) => <span className="tabular-nums">{tl(il.kira)}</span>,
+      deger: (il) =>
+        il.kira !== null ? (
+          <span className="tabular-nums">{tl(il.kira)}</span>
+        ) : (
+          <span className="text-slate-400">veri yok</span>
+        ),
+    },
+    {
+      etiket: "Net göç hızı (2025)",
+      sayi: (il) => il.gocHizi,
+      yon: "yuksek",
+      deger: (il) => (
+        <span className="tabular-nums">{isaretli(il.gocHizi)}‰</span>
+      ),
     },
   ];
 

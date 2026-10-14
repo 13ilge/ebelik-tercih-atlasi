@@ -2,7 +2,8 @@
 
 @theme inline {
   --font-sans: var(--font-atkinson);
-  --font-display: var(--font-playfair);
+  --font-display: var(--font-inter);
+  --font-mono: var(--font-plex-mono);
 }
 
 html {

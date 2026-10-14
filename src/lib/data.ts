@@ -1,11 +1,9 @@
 import datasetJson from "@/data/provinces.generated.json";
-import haritaJson from "@/data/turkey-map.generated.json";
 import kaynaklarJson from "@/data/kaynaklar.generated.json";
 import { slugla } from "./metin";
-import type { Alim, Dataset, Harita, Il, KaynakBilgileri } from "./types";
+import type { Alim, Dataset, Il, KaynakBilgileri } from "./types";
 
 export const dataset = datasetJson as unknown as Dataset;
-export const harita = haritaJson as unknown as Harita;
 export const kaynakBilgileri = kaynaklarJson as KaynakBilgileri;
 
 export const meta = dataset.meta;
@@ -67,7 +65,10 @@ export function tabanYuzdeligi(donem: string, taban: number): number {
 }
 
 export const medyanKira = (() => {
-  const kiralar = dataset.iller.map((il) => il.kira).sort((a, b) => a - b);
+  const kiralar = dataset.iller
+    .map((il) => il.kira)
+    .filter((k): k is number => k !== null)
+    .sort((a, b) => a - b);
   return kiralar[Math.floor(kiralar.length / 2)];
 })();
 

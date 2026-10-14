@@ -10,6 +10,7 @@ const provinces = read("provinces.json");
 const kpss = read("kpss.json");
 const tuik = read("tuik.json");
 const kira = read("kira.json");
+const goc = read("goc.json");
 const hastaneler = read("hastaneler.json");
 const hastanelerKhgm = read("hastaneler-khgm.json");
 const hastanelerEk = read("hastaneler-ek.json");
@@ -29,6 +30,7 @@ for (const r of kpss) {
 }
 const mTuik = index(tuik);
 const mKira = index(kira);
+const mGoc = index(goc);
 const mHastane = index(hastaneler);
 const mHastaneKhgm = index(hastanelerKhgm);
 const mHastaneEk = index(hastanelerEk);
@@ -139,12 +141,13 @@ const iller = provinces
     const key = norm(p.ad);
     const t = mTuik.get(key);
     const k = mKira.get(key);
+    const g = mGoc.get(key);
     const liste = hastaneleriBirlestir(p.ad);
     const alimlar = (mKpss.get(key) ?? []).sort((a, b) =>
       a.donem.localeCompare(b.donem)
     );
     if (!t) hata.push(`${p.ad}: TÜİK verisi yok`);
-    if (!k) hata.push(`${p.ad}: kira verisi yok`);
+    if (!g) hata.push(`${p.ad}: göç verisi yok`);
     if (liste.length === 0) hata.push(`${p.ad}: hastane verisi yok`);
     if (alimlar.length === 0) hata.push(`${p.ad}: KPSS alım verisi yok`);
     return {
@@ -156,6 +159,8 @@ const iller = provinces
       dogum: t?.dogum ?? null,
       dogumYil: t?.yil ?? null,
       kira: k?.kira ?? null,
+      gocHizi: g?.gocHizi ?? null,
+      gocYil: g?.yil ?? null,
       hastaneler: liste,
       alimlar: alimlar.map((a) => ({
         donem: a.donem,
@@ -183,7 +188,8 @@ const meta = {
   insaTarihi: new Date().toISOString().slice(0, 10),
   dogumYil: tuik[0]?.yil ?? null,
   nufusYil: tuik[0]?.yil ?? null,
-  kiraDonem: "Ağustos–Eylül 2025",
+  kiraDonem: "Eylül 2026",
+  gocYil: goc[0]?.yil ?? null,
   donemler,
   kadroToplam,
   varsayilanDonem: donemler[donemler.length - 1],

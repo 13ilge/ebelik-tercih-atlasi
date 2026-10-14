@@ -24,10 +24,36 @@ function jpegBaytlari(
   });
 }
 
+function pdfMetin(s: string): string {
+  if (/^[\x20-\x7e]*$/.test(s)) {
+    return `(${s.replace(/[\\()]/g, (m) => `\\${m}`)})`;
+  }
+  let hex = "feff";
+  for (const ch of s) {
+    const cp = ch.codePointAt(0) ?? 0;
+    if (cp > 0xffff) {
+      const kalan = cp - 0x10000;
+      hex += (0xd800 + (kalan >> 10)).toString(16).padStart(4, "0");
+      hex += (0xdc00 + (kalan & 0x3ff)).toString(16).padStart(4, "0");
+    } else {
+      hex += cp.toString(16).padStart(4, "0");
+    }
+  }
+  return `<${hex}>`;
+}
+
+function pdfTarihi(d: Date): string {
+  return `D:${d
+    .toISOString()
+    .replace(/[-:T]/g, "")
+    .slice(0, 14)}Z`;
+}
+
 function pdfOlustur(
   jpeg: Uint8Array<ArrayBuffer>,
   goruntuG: number,
-  goruntuY: number
+  goruntuY: number,
+  bilgi: { baslik: string; konu: string }
 ): Blob {
   const kodlayici = new TextEncoder();
   const parcalar: BlobPart[] = [];
@@ -68,7 +94,7 @@ function pdfOlustur(
     cizimG = kullanilabilirY * (goruntuG / goruntuY);
   }
   const x = (A4_GENISLIK - cizimG) / 2;
-  const y = (A4_YUKSEKLIK - cizimY) / 2;
+  const y = A4_YUKSEKLIK - KENAR - cizimY;
   const icerik = `q ${cizimG.toFixed(2)} 0 0 ${cizimY.toFixed(
     2
   )} ${x.toFixed(2)} ${y.toFixed(2)} cm /Im0 Do Q`;
@@ -85,12 +111,29 @@ function pdfOlustur(
   baytEkle(jpeg);
   metinEkle("\nendstream\nendobj\n");
 
+  ofsetler[6] = konum;
+  metinEkle(
+    "6 0 obj\n<< /Title " +
+      pdfMetin(bilgi.baslik) +
+      " /Author " +
+      pdfMetin("Ebelik Tercih Atlası") +
+      " /Subject " +
+      pdfMetin(bilgi.konu) +
+      " /Creator " +
+      pdfMetin("Ebelik Tercih Atlası") +
+      " /Producer " +
+      pdfMetin("Ebelik Tercih Atlası") +
+      " /CreationDate (" +
+      pdfTarihi(new Date()) +
+      ") >>\nendobj\n"
+  );
+
   const xrefKonum = konum;
-  let xref = "xref\n0 6\n0000000000 65535 f \n";
-  for (let i = 1; i <= 5; i++) {
+  let xref = "xref\n0 7\n0000000000 65535 f \n";
+  for (let i = 1; i <= 6; i++) {
     xref += `${String(ofsetler[i]).padStart(10, "0")} 00000 n \n`;
   }
-  xref += `trailer\n<< /Size 6 /Root 1 0 R >>\nstartxref\n${xrefKonum}\n%%EOF`;
+  xref += `trailer\n<< /Size 7 /Root 1 0 R /Info 6 0 R >>\nstartxref\n${xrefKonum}\n%%EOF`;
   metinEkle(xref);
 
   return new Blob(parcalar, { type: "application/pdf" });
@@ -103,9 +146,18 @@ export async function listePdfIndir(opts: {
   dipnot: string;
   dosyaAdi: string;
 }) {
-  const canvas = listeTuvaliCiz(opts, 1600);
+  const kullanilabilirG = A4_GENISLIK - KENAR * 2;
+  const kullanilabilirY = A4_YUKSEKLIK - KENAR * 2;
+  const canvas = listeTuvaliCiz(
+    opts,
+    1600,
+    1600 * (kullanilabilirY / kullanilabilirG)
+  );
   const jpeg = await jpegBaytlari(canvas);
-  const pdf = pdfOlustur(jpeg, canvas.width, canvas.height);
+  const pdf = pdfOlustur(jpeg, canvas.width, canvas.height, {
+    baslik: opts.baslik,
+    konu: opts.altBaslik,
+  });
   const url = URL.createObjectURL(pdf);
   const a = document.createElement("a");
   a.href = url;

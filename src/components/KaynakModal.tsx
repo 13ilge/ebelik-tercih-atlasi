@@ -1,8 +1,10 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import Link from "next/link";
 import { BookMarked, ExternalLink, X } from "lucide-react";
 import { kaynakBilgileri, meta } from "@/lib/data";
+import { tarihStr } from "@/lib/format";
 
 export default function KaynakModal({
   acik,
@@ -83,7 +85,7 @@ export default function KaynakModal({
               Veri kaynakları ve uyarı
             </h2>
             <p className="mt-1 text-xs text-slate-500">
-              Son veri derlemesi: {meta.insaTarihi}
+              Son veri derlemesi: {tarihStr(meta.insaTarihi)}
             </p>
           </div>
           <button
@@ -102,7 +104,7 @@ export default function KaynakModal({
         <ul className="mt-4 space-y-2">
           {kaynakBilgileri.kaynaklar.map((k) => (
             <li
-              key={k.url}
+              key={k.baslik}
               className="rounded-xl border border-slate-200 p-3 transition hover:border-sky-200 hover:bg-sky-50/40"
             >
               <a
@@ -132,8 +134,17 @@ export default function KaynakModal({
           Bu proje bağımsız bir bilgilendirme aracıdır. Taban puanlar ilgili
           atama döneminde o ile yerleşen adayların en düşük puanını gösterir ve
           sonraki dönemler için bağlayıcı değildir. Doğum ve nüfus verileri
-          TÜİK, kira verileri Endeksa derlemesi, hastane listeleri Sağlık
-          Bakanlığı kaynaklarından alınmıştır.
+          TÜİK, kira verileri Endeksa&apos;dan yazılı izinle, hastane listeleri
+          Sağlık Bakanlığı kaynaklarından alınmıştır. Çerez ve izleme
+          kullanılmaz;
+          ayrıntılar için{" "}
+          <Link
+            href="/gizlilik"
+            className="font-medium text-sky-700 underline underline-offset-2 hover:text-sky-800"
+          >
+            gizlilik notuna
+          </Link>{" "}
+          bakın.
         </p>
       </div>
     </div>

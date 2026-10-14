@@ -13,10 +13,8 @@ import {
   Trash2,
   X,
 } from "lucide-react";
-import { alimGetir, dataset, donemKadro, ilHaritasi } from "@/lib/data";
-import { puanStr, sayi, tl } from "@/lib/format";
-import { listePdfIndir } from "@/lib/pdf";
-import { listePngIndir } from "@/lib/png";
+import { alimGetir, dataset, donemKadro, ilHaritasi, meta } from "@/lib/data";
+import { puanStr, sayi, tarihStr, tl } from "@/lib/format";
 import type { Il } from "@/lib/types";
 import IlAraEkle from "./IlAraEkle";
 import IlDetay from "./IlDetay";
@@ -69,12 +67,13 @@ export default function AltPanel({
     secililer.map((plaka, i) => {
       const il = ilHaritasi.get(plaka);
       const alim = il ? alimGetir(il, donem) : undefined;
+      const kiraMetni = il && il.kira !== null ? ` · ${tl(il.kira)}` : "";
       return {
         sira: i + 1,
         ad: il?.ad ?? "",
         sag: alim
-          ? `${puanStr(alim.taban)} · ${alim.kontenjan} kadro · ${tl(il!.kira)}`
-          : `bu dönem alım yok · ${il ? tl(il.kira) : ""}`,
+          ? `${puanStr(alim.taban)} · ${alim.kontenjan} kadro${kiraMetni}`
+          : `bu dönem alım yok${kiraMetni}`,
       };
     });
 
@@ -93,7 +92,8 @@ export default function AltPanel({
     setTimeout(() => setKopyalandi(false), 2000);
   };
 
-  const pngIndir = () => {
+  const pngIndir = async () => {
+    const { listePngIndir } = await import("@/lib/png");
     listePngIndir({
       baslik: "Ebelik Tercih Listem",
       altBaslik: `${donem} dönemi${puan !== null ? ` · KPSS P3: ${puanStr(puan, 3)}` : ""} · ${secililer.length} il`,
@@ -104,8 +104,9 @@ export default function AltPanel({
     });
   };
 
-  const pdfIndir = () => {
-    void listePdfIndir({
+  const pdfIndir = async () => {
+    const { listePdfIndir } = await import("@/lib/pdf");
+    await listePdfIndir({
       baslik: "Ebelik Tercih Listem",
       altBaslik: `${donem} dönemi${puan !== null ? ` · KPSS P3: ${puanStr(puan, 3)}` : ""} · ${secililer.length} il`,
       satirlar: listeSatirlari(),
@@ -276,8 +277,8 @@ export default function AltPanel({
                 className="flex min-w-0 flex-1 items-center gap-2 text-left"
                 title={`${il.ad} detayını göster`}
               >
-                <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-slate-800 text-xs font-bold text-white">
-                  {i + 1}
+                <span className="w-6 shrink-0 text-right font-mono text-xs font-semibold tabular-nums text-slate-500">
+                  {i + 1}.
                 </span>
                 <span className="min-w-0 flex-1 truncate text-sm font-medium text-slate-800">
                   {il.ad}
@@ -523,7 +524,7 @@ function BosDurum({
         <p className="mt-3 rounded-lg bg-amber-50 p-2 text-[0.6875rem] leading-relaxed text-amber-800">
           Veriler kamuya açık kaynaklardan derlenmiştir; resmî tercih kaynağı
           değildir. Tercih öncesi ÖSYM ve Sağlık Bakanlığı duyurularını esas
-          alın.
+          alın. Son veri derlemesi: {tarihStr(meta.insaTarihi)}.
         </p>
       </Kart>
 

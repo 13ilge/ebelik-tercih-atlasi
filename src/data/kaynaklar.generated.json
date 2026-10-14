@@ -2,28 +2,22 @@
   "uyari": "Bu sitedeki veriler kamuya açık kaynaklardan derlenmiştir; resmî atama/tercih kaynağı değildir. Tercih yapmadan önce ÖSYM ve Sağlık Bakanlığı'nın resmî duyurularını esas alın. Taban puanlar ilgili dönemde o ile yerleşen en düşük puanı gösterir ve sonraki dönemler için kesinlik taşımaz.",
   "kaynaklar": [
     {
-      "baslik": "Ebe atama taban puanları (KPSS-2024/5)",
-      "aciklama": "Sağlık Bakanlığı 2024/5 dönemi ebe (lisans) kadro bazlı yerleştirme sonuçları; il bazlı en düşük puanlar iki bağımsız derlemede çapraz doğrulandı.",
-      "url": "https://universitenitanit.com/makale/oku/ebe-atama-taban-puanlari-ve-alimlar-kpss-lisans",
+      "baslik": "Ebe atama taban puanları (KPSS-2024/5) — resmî yerleştirme listesi",
+      "aciklama": "Sağlık Bakanlığı sözleşmeli sağlık personeli pozisyonlarına yerleştirme sonuçlarına ilişkin en küçük ve en büyük puanlar listesi (KPSS-2024/5, lisans). 671 ebe programı, 2.000 kadro; veri setindeki 2024/5 kayıtları bu belgeyle birebir doğrulandı (81/81 il, uyuşmazlık yok). Zonguldak kontenjan düzeltmesi (4 → 8) de bu belgeyle teyit edildi. Belge depoda: data/kaynaklar/minmax_lisansdt04032024.pdf",
+      "url": "https://www.osym.gov.tr",
       "tarih": "Mart 2024"
     },
     {
-      "baslik": "Ebe atama taban puanları (KPSS-2024/5) — çapraz doğrulama",
-      "aciklama": "Aynı dönemin il bazlı taban puan listesi; 81 ilde birbirini doğruluyor.",
-      "url": "https://kazanabilirsin.com/ebelik-atama-puanlari-kpss-2024",
-      "tarih": "Mart 2024"
-    },
-    {
-      "baslik": "Ebe atama taban puanları (KPSS-2025/4)",
-      "aciklama": "2025/4 dönemi ebe (lisans) il bazlı taban puan ve kontenjan derlemesi. İstanbul verisi ikinci kaynakla doğrulandı.",
-      "url": "https://sonatamalar.com/atama/ebelik-lisans",
+      "baslik": "Ebe atama taban puanları (KPSS-2025/4) — resmî yerleştirme listesi",
+      "aciklama": "Sağlık Bakanlığı sözleşmeli sağlık personeli pozisyonlarına yerleştirme sonuçlarına ilişkin en küçük ve en büyük puanlar listesi (KPSS-2025/4, lisans). 647 ebe programı, 1.280 kadro; veri setindeki 2025/4 kayıtları bu belgeyle birebir doğrulandı (81/81 il, uyuşmazlık yok). Belge depoda: data/kaynaklar/minmaxlisans_sb4d14052025.pdf",
+      "url": "https://www.osym.gov.tr",
       "tarih": "2025"
     },
     {
-      "baslik": "Ebe atama taban puanları (KPSS-2025/5)",
-      "aciklama": "2025/5 dönemi ebe (lisans) il bazlı taban puan ve kontenjan derlemesi; 805 kadro.",
-      "url": "https://www.eleman.net/kpss-kilavuzu/ebelik/atama-puanlari",
-      "tarih": "Ekim 2025"
+      "baslik": "Ebe atama taban puanları (KPSS-2025/5) — resmî yerleştirme listesi",
+      "aciklama": "Sağlık Bakanlığı sözleşmeli personel pozisyonlarına yerleştirme sonuçlarına ilişkin en küçük ve en büyük puanlar listesi (KPSS-2025/5, lisans). 629 ebe programı, 805 kadro; veri setindeki 2025/5 kayıtları bu belgeyle birebir doğrulandı (80/80 il, uyuşmazlık yok). Belge depoda: data/kaynaklar/minmax_lisanssb5d14052025.pdf",
+      "url": "https://www.osym.gov.tr",
+      "tarih": "2025"
     },
     {
       "baslik": "Doğum İstatistikleri, 2025",
@@ -38,10 +32,16 @@
       "tarih": "9 Şubat 2026"
     },
     {
-      "baslik": "Ortalama kira verileri (Endeksa derlemesi)",
-      "aciklama": "81 il ortalama konut kirası; Endeksa verilerinin basına yansıyan derlemesi.",
-      "url": "https://kayserihaber.com.tr/haber/turkiye_genelinde_kira_fiyatlari_ortalamasi_aciklandi_kayseri_bakin_kacinci_sirada-88083",
-      "tarih": "Ağustos-Eylül 2025"
+      "baslik": "İç Göç İstatistikleri, 2025",
+      "aciklama": "İl bazlı net göç ve net göç hızı verileri (ADNKS'ye dayalı). Veri setindeki net göç hızı değerleri bu tablodan çıkarılmıştır; toplam iller arası göç (2.475.019 kişi) ve İstanbul net göçü (-41.346 kişi) ile doğrulanmıştır. Belge depoda: data/kaynaklar/tuik-iller-arasi-goc.xlsx",
+      "url": "https://veriportali.tuik.gov.tr/tr/press/58139",
+      "tarih": "Temmuz 2026"
+    },
+    {
+      "baslik": "Ortalama kira verileri (Endeksa)",
+      "aciklama": "İl bazlı ortalama konut kirası; Endeksa'nın Eylül 2026 verilerinden alınmıştır ve Endeksa'nın yazılı izniyle (Ekim 2026) kaynak gösterilerek yayımlanmaktadır. Endeksa'da verisi bulunmayan Diyarbakır, Şırnak ve Ardahan için kira bilgisi gösterilmez.",
+      "url": "https://www.endeksa.com/",
+      "tarih": "Eylül 2026"
     },
     {
       "baslik": "Kamu hastaneleri listesi (2. ve 3. basamak)",
@@ -54,6 +54,12 @@
       "aciklama": "Devlet üniversitelerinin tıp fakültesi hastaneleri (45 tesis); her biri üniversitelerin resmî sitelerinden doğrulanmıştır. Sağlık Bakanlığı'na bağlı afiliye EAH'ler KHGM listesinde ayrıca yer alır.",
       "url": "https://www.yok.gov.tr/",
       "tarih": "2026"
+    },
+    {
+      "baslik": "İl sınırları (harita geometrisi)",
+      "aciklama": "Türkiye il sınırları Natural Earth 10m 'admin-1 states/provinces' veri kümesinden alınmıştır; Natural Earth kamu malıdır (kullanım için izin veya atıf şartı yoktur).",
+      "url": "https://www.naturalearthdata.com/",
+      "tarih": "2025"
     }
   ]
 }

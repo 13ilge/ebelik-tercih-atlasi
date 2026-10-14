@@ -74,16 +74,20 @@ await mobil.goto(adres, { waitUntil: "networkidle" });
 await mobil.waitForTimeout(1200);
 await mobil.screenshot({ path: `${outDir}/05-mobil.png` });
 
-const ankKutu = await mobil.locator('path[aria-label^="Ankara"]').boundingBox();
-if (ankKutu) {
-  const ax = ankKutu.x + ankKutu.width / 2;
-  const ay = ankKutu.y + ankKutu.height / 2;
-  await mobil.touchscreen.tap(ax, ay);
-  await mobil.waitForTimeout(120);
-  await mobil.touchscreen.tap(ax, ay);
-  await mobil.waitForTimeout(700);
-  await mobil.screenshot({ path: `${outDir}/08-mobil-zoom.png` });
-}
+const arama = mobil.locator('input[aria-label="İl ara"]');
+await arama.fill("Ankara");
+await mobil.waitForTimeout(600);
+await mobil.screenshot({ path: `${outDir}/08-mobil-arama.png` });
+
+const mobilSonuclar = mobil.getByRole("option");
+const mobilSonucSayi = await mobilSonuclar.count();
+console.log(
+  `Mobil aramada "Ankara" sonucu: ${mobilSonucSayi > 0} (${mobilSonucSayi} sonuç)`
+);
+
+await mobilSonuclar.first().click();
+await mobil.waitForTimeout(700);
+await mobil.screenshot({ path: `${outDir}/09-mobil-secim.png` });
 
 await browser.close();
 console.log("Ekran görüntüleri hazır:", outDir);
