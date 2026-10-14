@@ -34,6 +34,7 @@ export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: BASLIK,
   description: ACIKLAMA,
+  alternates: { canonical: "/" },
   openGraph: {
     type: "website",
     locale: "tr_TR",
