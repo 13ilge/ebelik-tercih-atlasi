@@ -101,29 +101,21 @@ export default function KaynakModal({
           {kaynakBilgileri.uyari}
         </p>
 
-        <ul className="mt-4 space-y-2">
+        <ul className="mt-4 divide-y divide-slate-100 overflow-hidden rounded-xl border border-slate-200">
           {kaynakBilgileri.kaynaklar.map((k) => (
-            <li
-              key={k.baslik}
-              className="rounded-xl border border-slate-200 p-3 transition hover:border-sky-200 hover:bg-sky-50/40"
-            >
+            <li key={k.baslik}>
               <a
                 href={k.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-start justify-between gap-3"
+                className="flex items-center justify-between gap-3 px-3.5 py-3 transition hover:bg-sky-50/40"
               >
-                <span>
-                  <span className="block text-base font-semibold text-slate-900">
-                    {k.baslik}
-                  </span>
-                  <span className="mt-0.5 block text-xs text-slate-500">
-                    {k.aciklama}
-                  </span>
+                <span className="text-sm font-medium text-slate-800">
+                  {k.baslik}
                 </span>
-                <span className="flex shrink-0 items-center gap-1 text-xs text-sky-700">
+                <span className="flex shrink-0 items-center gap-1.5 text-xs text-slate-400">
                   {k.tarih}
-                  <ExternalLink className="h-3 w-3" />
+                  <ExternalLink className="h-3.5 w-3.5 text-sky-700" />
                 </span>
               </a>
             </li>

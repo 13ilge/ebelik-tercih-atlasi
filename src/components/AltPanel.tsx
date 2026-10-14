@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Link from "next/link";
 import {
   ArrowDownWideNarrow,
   ArrowLeftRight,
@@ -27,9 +28,11 @@ interface Props {
   aktif: number | null;
   donem: string;
   puan: number | null;
+  mobil?: boolean;
   karsilastir: boolean;
   genis?: boolean;
   onFareGiris?: () => void;
+  onKaynak: () => void;
   onKarsilastir: (v: boolean) => void;
   onEkle: (plaka: number) => void;
   onCikar: (plaka: number) => void;
@@ -43,9 +46,11 @@ export default function AltPanel({
   aktif,
   donem,
   puan,
+  mobil,
   karsilastir,
   genis,
   onFareGiris,
+  onKaynak,
   onKarsilastir,
   onEkle,
   onCikar,
@@ -201,6 +206,63 @@ export default function AltPanel({
     onSirala(yeni);
   };
 
+  const araclar = (etiketGoster: boolean) => (
+    <>
+      <button
+        onClick={baglantiKopyala}
+        title="Tercih listesi bağlantısını kopyala"
+        aria-label="Bağlantıyı kopyala"
+        className={`flex items-center justify-center gap-1.5 rounded-lg border px-3 py-2 text-sm font-medium transition max-sm:flex-1 ${
+          kopyalandi
+            ? "border-emerald-200 bg-emerald-50 text-emerald-700"
+            : "border-slate-200 bg-white text-slate-600 hover:border-slate-300 hover:text-slate-900"
+        }`}
+      >
+        {kopyalandi ? (
+          <Check className="h-4 w-4" />
+        ) : (
+          <Link2 className="h-4 w-4" />
+        )}
+        <span className={etiketGoster ? undefined : "hidden sm:inline"}>
+          {kopyalandi ? "Kopyalandı" : "Bağlantı"}
+        </span>
+      </button>
+      <button
+        onClick={pngIndir}
+        title="Listeyi PNG olarak indir"
+        aria-label="PNG indir"
+        className="flex items-center justify-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-600 transition max-sm:flex-1 hover:border-slate-300 hover:text-slate-900"
+      >
+        <Download className="h-4 w-4" />
+        <span className={etiketGoster ? undefined : "hidden sm:inline"}>
+          PNG
+        </span>
+      </button>
+      <button
+        onClick={pdfIndir}
+        title="Listeyi PDF olarak indir"
+        aria-label="PDF indir"
+        className="flex items-center justify-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-600 transition max-sm:flex-1 hover:border-slate-300 hover:text-slate-900"
+      >
+        <FileDown className="h-4 w-4" />
+        <span className={etiketGoster ? undefined : "hidden sm:inline"}>
+          PDF indir
+        </span>
+      </button>
+      <button
+        onClick={onTemizle}
+        title="Seçimi temizle"
+        aria-label="Seçimi temizle"
+        className="flex items-center justify-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-500 transition max-sm:flex-1 hover:border-red-200 hover:bg-red-50 hover:text-red-700"
+      >
+        <Trash2 className="h-4 w-4" />
+        <span className={etiketGoster ? undefined : "hidden sm:inline"}>
+          Temizle
+        </span>
+      </button>
+    </>
+  );
+
   const listeIcerigi = (tamEkran: boolean) => (
     <>
       {!tamEkran && (
@@ -352,53 +414,8 @@ export default function AltPanel({
                   {karsilastir ? "Detaya dön" : "Karşılaştır"}
                 </button>
               )}
-              <div className="ml-auto flex flex-wrap items-center gap-1.5">
-                <button
-                  onClick={baglantiKopyala}
-                  title="Tercih listesi bağlantısını kopyala"
-                  aria-label="Bağlantıyı kopyala"
-                  className={`flex items-center gap-1.5 rounded-lg border px-3 py-2 text-sm font-medium transition ${
-                    kopyalandi
-                      ? "border-emerald-200 bg-emerald-50 text-emerald-700"
-                      : "border-slate-200 bg-white text-slate-600 hover:border-slate-300 hover:text-slate-900"
-                  }`}
-                >
-                  {kopyalandi ? (
-                    <Check className="h-4 w-4" />
-                  ) : (
-                    <Link2 className="h-4 w-4" />
-                  )}
-                  <span className="hidden sm:inline">
-                    {kopyalandi ? "Kopyalandı" : "Bağlantı"}
-                  </span>
-                </button>
-                <button
-                  onClick={pngIndir}
-                  title="Listeyi PNG olarak indir"
-                  aria-label="PNG indir"
-                  className="flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-600 transition hover:border-slate-300 hover:text-slate-900"
-                >
-                  <Download className="h-4 w-4" />
-                  <span className="hidden sm:inline">PNG</span>
-                </button>
-                <button
-                  onClick={pdfIndir}
-                  title="Listeyi PDF olarak indir"
-                  aria-label="PDF indir"
-                  className="flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-600 transition hover:border-slate-300 hover:text-slate-900"
-                >
-                  <FileDown className="h-4 w-4" />
-                  <span className="hidden sm:inline">PDF indir</span>
-                </button>
-                <button
-                  onClick={onTemizle}
-                  title="Seçimi temizle"
-                  aria-label="Seçimi temizle"
-                  className="flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-500 transition hover:border-red-200 hover:bg-red-50 hover:text-red-700"
-                >
-                  <Trash2 className="h-4 w-4" />
-                  <span className="hidden sm:inline">Temizle</span>
-                </button>
+              <div className="ml-auto flex w-full items-center gap-1.5 sm:w-auto">
+                {araclar(false)}
               </div>
             </div>
 
@@ -457,14 +474,40 @@ export default function AltPanel({
                     {listeIcerigi(true)}
                   </div>
                 </div>
+                <div className="grid grid-cols-2 gap-1.5 border-t border-slate-200 bg-white p-3">
+                  {araclar(true)}
+                </div>
               </div>
             )}
 
             </div>
           </div>
         ) : (
-          <BosDurum secililer={secililer} donem={donem} onEkle={onEkle} />
+          <BosDurum
+            secililer={secililer}
+            donem={donem}
+            onEkle={onEkle}
+            mobil={mobil}
+          />
         )}
+
+        <div className="mt-4 flex flex-wrap items-center justify-between gap-x-4 gap-y-1 border-t border-slate-200 pt-3 text-xs text-slate-400">
+          <span>Bağımsız bilgilendirme aracı; resmî tercih kaynağı değildir.</span>
+          <span className="flex items-center gap-4">
+            <button
+              onClick={onKaynak}
+              className="font-medium text-slate-500 underline underline-offset-2 transition hover:text-sky-800"
+            >
+              Veri ve kaynaklar
+            </button>
+            <Link
+              href="/gizlilik"
+              className="font-medium text-slate-500 underline underline-offset-2 transition hover:text-sky-800"
+            >
+              Gizlilik
+            </Link>
+          </span>
+        </div>
       </div>
     </section>
   );
@@ -474,10 +517,12 @@ function BosDurum({
   secililer,
   donem,
   onEkle,
+  mobil,
 }: {
   secililer: number[];
   donem: string;
   onEkle: (plaka: number) => void;
+  mobil?: boolean;
 }) {
   const kolay = [...dataset.iller]
     .map((il) => ({ il, alim: alimGetir(il, donem) }))
@@ -498,21 +543,23 @@ function BosDurum({
 
   return (
     <div className="grid gap-3 lg:grid-cols-3">
-      <Kart baslik="Nasıl çalışır?">
+      <Kart baslik="Nasıl çalışır?" className="max-lg:order-3">
         <ol className="space-y-2 text-sm text-slate-700">
           <li className="flex gap-2">
             <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-sky-100 text-xs font-bold text-sky-800">
               1
             </span>
-            Bir il seç (haritadan, aramadan ya da listeden); tercih listene
-            eklenir, detayları burada açılır.
+            {mobil
+              ? "Arama çubuğundan bir il ara ve seç; tercih listene eklenir, detayları burada açılır."
+              : "Bir il seç (haritadan, aramadan ya da listeden); tercih listene eklenir, detayları burada açılır."}
           </li>
           <li className="flex gap-2">
             <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-sky-100 text-xs font-bold text-sky-800">
               2
             </span>
-            Üstteki alana KPSS P3 puanını yaz; harita &quot;puanına göre
-            ulaşılabilirlik&quot; renklerine döner.
+            {mobil
+              ? "Üstteki alana KPSS P3 puanını yaz; sonuçlar ve detaylar puanına göre uygunluk rozetleriyle işaretlenir."
+              : "Üstteki alana KPSS P3 puanını yaz; harita \"puanına göre ulaşılabilirlik\" renklerine döner."}
           </li>
           <li className="flex gap-2">
             <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-sky-100 text-xs font-bold text-sky-800">
@@ -532,6 +579,7 @@ function BosDurum({
       <Kart
         baslik={`${donem} · en ulaşılabilir iller`}
         ekstra={<Rozet ton="yesil">düşük taban</Rozet>}
+        className="max-lg:order-1"
       >
         <Liste
           satirlar={kolay.map(({ il, alim }) => ({
@@ -551,6 +599,7 @@ function BosDurum({
             {sayi(donemKadro(donem))} kadro toplam
           </Rozet>
         }
+        className="max-lg:order-2"
       >
         <Liste
           satirlar={kadro.map(({ il, alim }) => ({

@@ -2,12 +2,19 @@ export default function Logo({
   boyut = "lg",
   altBaslik,
   mobildeGizle,
+  mobilKucuk,
 }: {
   boyut?: "lg" | "sm";
   altBaslik?: string;
   mobildeGizle?: boolean;
+  mobilKucuk?: boolean;
 }) {
-  const metin = boyut === "lg" ? "text-2xl" : "text-lg";
+  const metin =
+    boyut === "lg"
+      ? mobilKucuk
+        ? "text-lg sm:text-2xl"
+        : "text-2xl"
+      : "text-lg";
   return (
     <span className="inline-flex flex-col leading-tight">
       <span

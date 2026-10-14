@@ -79,7 +79,9 @@ await arama.fill("Ankara");
 await mobil.waitForTimeout(600);
 await mobil.screenshot({ path: `${outDir}/08-mobil-arama.png` });
 
-const mobilSonuclar = mobil.getByRole("option");
+const mobilSonuclar = mobil
+  .getByRole("listbox", { name: "İl sonuçları" })
+  .getByRole("option");
 const mobilSonucSayi = await mobilSonuclar.count();
 console.log(
   `Mobil aramada "Ankara" sonucu: ${mobilSonucSayi > 0} (${mobilSonucSayi} sonuç)`

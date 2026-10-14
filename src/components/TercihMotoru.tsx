@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useState, useSyncExternalStore } from "react";
 import dynamic from "next/dynamic";
 import Link from "next/link";
-import { BookMarked, X } from "lucide-react";
+import { ChevronDown, X } from "lucide-react";
 import { donemKadro, ilHaritasi, meta, slugHaritasi } from "@/lib/data";
 import { sayi } from "@/lib/format";
 import { puanAyristir } from "@/lib/puan";
@@ -231,96 +231,111 @@ export default function TercihMotoru() {
             <h1>
               <Logo
                 mobildeGizle
+                mobilKucuk
                 altBaslik="KPSS lisans (P3) ebelik atamaları · 81 il"
               />
             </h1>
           </Link>
 
-          <div className="flex w-full flex-wrap items-center gap-x-3 gap-y-2 lg:ml-auto lg:w-auto">
-            <div className="flex items-center gap-2">
-              <span className="text-sm font-medium text-slate-500 max-sm:sr-only">
-                Atama dönemi
-              </span>
-              <div
-                role="group"
+          <div className="ml-auto flex items-center gap-2">
+            <span className="text-sm font-medium text-slate-500 max-sm:sr-only">
+              Atama dönemi
+            </span>
+            <div
+              role="group"
+              aria-label="Atama dönemi"
+              className="hidden rounded-lg border border-slate-200 bg-slate-100 p-0.5 sm:flex"
+            >
+              {meta.donemler.map((d) => (
+                <button
+                  key={d}
+                  onClick={() => setDonem(d)}
+                  aria-pressed={d === donem}
+                  className={`rounded-md px-2.5 py-1 text-sm font-medium transition ${
+                    d === donem
+                      ? "bg-slate-900 text-white shadow-sm"
+                      : "text-slate-600 hover:bg-white"
+                  }`}
+                  title={`${d} döneminde toplam ${donemKadro(d)} ebe kadrosu`}
+                >
+                  {d}
+                  <span
+                    className={`ml-1 hidden tabular-nums 2xl:inline ${
+                      d === donem ? "text-slate-300" : "text-slate-400"
+                    }`}
+                  >
+                    {sayi(donemKadro(d))}
+                  </span>
+                </button>
+              ))}
+            </div>
+            <span className="relative sm:hidden">
+              <select
+                value={donem}
+                onChange={(e) => setDonem(e.target.value)}
                 aria-label="Atama dönemi"
-                className="flex rounded-lg border border-slate-200 bg-slate-100 p-0.5"
+                title={`${donem} döneminde toplam ${donemKadro(donem)} ebe kadrosu`}
+                className="appearance-none rounded-lg border border-slate-200 bg-slate-100 py-1.5 pl-3 pr-8 text-sm font-medium text-slate-800 outline-none"
               >
                 {meta.donemler.map((d) => (
-                  <button
-                    key={d}
-                    onClick={() => setDonem(d)}
-                    aria-pressed={d === donem}
-                    className={`rounded-md px-2.5 py-1 text-sm font-medium transition ${
-                      d === donem
-                        ? "bg-slate-900 text-white shadow-sm"
-                        : "text-slate-600 hover:bg-white"
-                    }`}
-                    title={`${d} döneminde toplam ${donemKadro(d)} ebe kadrosu`}
-                  >
+                  <option key={d} value={d}>
                     {d}
-                    <span
-                      className={`ml-1 hidden tabular-nums 2xl:inline ${
-                        d === donem ? "text-slate-300" : "text-slate-400"
-                      }`}
-                    >
-                      {sayi(donemKadro(d))}
-                    </span>
-                  </button>
+                  </option>
                 ))}
-              </div>
-            </div>
+              </select>
+              <ChevronDown className="pointer-events-none absolute right-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-slate-500" />
+            </span>
+          </div>
 
-            <div className="flex items-center gap-2">
-              <label className="flex items-center gap-2">
-                <span className="text-sm font-medium text-slate-500 max-sm:sr-only">
-                  KPSS P3
-                </span>
-                <span className="relative">
-                  <input
-                    value={puanMetni}
-                    onChange={(e) => {
-                      setPuanMetni(e.target.value);
-                      setModDegisken("uygunluk");
-                    }}
-                    inputMode="decimal"
-                    placeholder="örn. 78,456"
-                    aria-invalid={puanGecersiz}
-                    className={`w-32 rounded-lg border bg-white px-2.5 py-2 pr-7 text-sm tabular-nums text-slate-900 outline-none transition placeholder:text-slate-400 focus:ring-2 ${
-                      puanGecersiz
-                        ? "border-red-300 focus:border-red-400 focus:ring-red-100"
-                        : "border-slate-200 focus:border-sky-400 focus:ring-sky-100"
-                    }`}
-                  />
-                  {puanMetni && (
-                    <button
-                      onClick={() => setPuanMetni("")}
-                      aria-label="Puanı temizle"
-                      className="absolute right-1.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700"
-                    >
-                      <X className="h-3.5 w-3.5" />
-                    </button>
-                  )}
-                </span>
-              </label>
-              {puanGecersiz && (
-                <span className="text-xs font-medium text-red-600">
-                  40–100 arası
-                </span>
-              )}
-            </div>
+          <div className="flex w-full flex-wrap items-center gap-x-3 gap-y-2 lg:w-auto">
+            <label className="flex min-w-0 flex-1 items-center gap-2 sm:flex-none">
+              <span className="text-sm font-medium text-slate-500 max-sm:sr-only">
+                KPSS P3
+              </span>
+              <span className="relative min-w-0 flex-1 sm:flex-none">
+                <input
+                  value={puanMetni}
+                  onChange={(e) => {
+                    setPuanMetni(e.target.value);
+                    setModDegisken("uygunluk");
+                  }}
+                  inputMode="decimal"
+                  placeholder="örn. 78,456"
+                  aria-invalid={puanGecersiz}
+                  className={`w-full rounded-lg border bg-white px-2.5 py-2 pr-7 text-sm tabular-nums text-slate-900 outline-none transition placeholder:text-slate-400 focus:ring-2 sm:w-32 ${
+                    puanGecersiz
+                      ? "border-red-300 focus:border-red-400 focus:ring-red-100"
+                      : "border-slate-200 focus:border-sky-400 focus:ring-sky-100"
+                  }`}
+                />
+                {puanMetni && (
+                  <button
+                    onClick={() => setPuanMetni("")}
+                    aria-label="Puanı temizle"
+                    className="absolute right-1.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700"
+                  >
+                    <X className="h-3.5 w-3.5" />
+                  </button>
+                )}
+              </span>
+            </label>
+            {puanGecersiz && (
+              <span className="text-xs font-medium text-red-600">
+                40–100 arası
+              </span>
+            )}
 
             {puan !== null && (
               <div
                 role="group"
                 aria-label="Harita görünümü"
-                className="flex rounded-lg border border-slate-200 bg-slate-100 p-0.5"
+                className="flex rounded-lg border border-slate-200 bg-slate-100 p-0.5 max-sm:w-full"
               >
                 <button
                   onClick={() => setModDegisken("puan")}
                   aria-pressed={etkinMod === "puan"}
                   title="Taban puan ısı haritası"
-                  className={`rounded-md px-2.5 py-1 text-sm font-medium transition ${
+                  className={`rounded-md px-2.5 py-1 text-sm font-medium transition max-sm:flex-1 ${
                     etkinMod === "puan"
                       ? "bg-white text-slate-900 shadow-sm"
                       : "text-slate-500 hover:text-slate-700"
@@ -331,7 +346,7 @@ export default function TercihMotoru() {
                 <button
                   onClick={() => setModDegisken("uygunluk")}
                   aria-pressed={etkinMod === "uygunluk"}
-                  className={`rounded-md px-2.5 py-1 text-sm font-medium transition ${
+                  className={`rounded-md px-2.5 py-1 text-sm font-medium transition max-sm:flex-1 ${
                     etkinMod === "uygunluk"
                       ? "bg-white text-slate-900 shadow-sm"
                       : "text-slate-500 hover:text-slate-700"
@@ -341,15 +356,6 @@ export default function TercihMotoru() {
                 </button>
               </div>
             )}
-
-            <button
-              onClick={() => setKaynakAcik(true)}
-              aria-label="Veri ve kaynaklar"
-              className="flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-2.5 py-2 text-sm font-medium text-slate-700 transition hover:border-sky-300 hover:text-sky-800 sm:px-3 sm:py-1.5"
-            >
-              <BookMarked className="h-4 w-4" />
-              <span className="hidden xl:inline">Veri ve kaynaklar</span>
-            </button>
           </div>
         </div>
       </header>
@@ -386,11 +392,13 @@ export default function TercihMotoru() {
           aktif={aktif}
           donem={donem}
           puan={puan}
+          mobil={mobilVar}
           karsilastir={karsilastir}
           genis={imlecVar && cekmece}
           onFareGiris={() => {
             if (imlecVar) setCekmece(true);
           }}
+          onKaynak={() => setKaynakAcik(true)}
           onKarsilastir={setKarsilastir}
           onEkle={ekle}
           onCikar={cikar}
