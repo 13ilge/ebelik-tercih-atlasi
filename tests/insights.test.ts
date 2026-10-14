@@ -25,6 +25,7 @@ function il(over: Partial<Il> = {}): Il {
 const ctx = {
   donem: "2025/5",
   medyanKira: MEDYAN_KIRA,
+  kiraDonem: "Eylül 2026",
   tabanYuzdeligi: 0.5,
   taban: 75,
   kontenjan: 10,

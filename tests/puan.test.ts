@@ -14,6 +14,8 @@ describe("puanAyristir", () => {
   it("karışık ayraçlı girdiyi reddeder", () => {
     expect(puanAyristir("1.234,5")).toBeNull();
     expect(puanAyristir("78.456,5")).toBeNull();
+    expect(puanAyristir("4.5,6")).toBeNull();
+    expect(puanAyristir("8.9,5")).toBeNull();
   });
 
   it("sınır değerleri kabul eder", () => {

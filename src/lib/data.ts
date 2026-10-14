@@ -31,7 +31,6 @@ export interface DonemIstatistik {
   donem: string;
   min: number;
   max: number;
-  medyan: number;
   kadro: number;
   tabanlar: number[];
 }
@@ -49,7 +48,6 @@ export function donemIstatistigi(donem: string): DonemIstatistik {
     donem,
     min: tabanlar[0] ?? 0,
     max: tabanlar[tabanlar.length - 1] ?? 0,
-    medyan: tabanlar[Math.floor(tabanlar.length / 2)] ?? 0,
     kadro: alimlar.reduce((s, a) => s + a.kontenjan, 0),
     tabanlar,
   };
@@ -69,7 +67,11 @@ export const medyanKira = (() => {
     .map((il) => il.kira)
     .filter((k): k is number => k !== null)
     .sort((a, b) => a - b);
-  return kiralar[Math.floor(kiralar.length / 2)];
+  if (kiralar.length === 0) return 0;
+  const orta = kiralar.length >> 1;
+  return kiralar.length % 2 === 1
+    ? kiralar[orta]
+    : (kiralar[orta - 1] + kiralar[orta]) / 2;
 })();
 
 export function dogumOrani(il: Il): number {

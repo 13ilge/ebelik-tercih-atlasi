@@ -1,4 +1,4 @@
-import { alimGetir, ilHaritasi } from "@/lib/data";
+import { alimGetir, ilHaritasi, meta } from "@/lib/data";
 import { uygunlukSonucu } from "@/lib/colors";
 import { isaretli, puanStr, sayi, tl } from "@/lib/format";
 import type { Il } from "@/lib/types";
@@ -51,12 +51,12 @@ export default function KarsilastirmaTablosu({
       },
     },
     {
-      etiket: "Doğum (2025)",
+      etiket: `Doğum (${meta.dogumYil})`,
       sayi: (il) => il.dogum,
       deger: (il) => <span className="tabular-nums">{sayi(il.dogum)}</span>,
     },
     {
-      etiket: "Nüfus (2025)",
+      etiket: `Nüfus (${meta.nufusYil})`,
       sayi: (il) => il.nufus,
       deger: (il) => <span className="tabular-nums">{sayi(il.nufus)}</span>,
     },
@@ -72,7 +72,7 @@ export default function KarsilastirmaTablosu({
         ),
     },
     {
-      etiket: "Net göç hızı (2025)",
+      etiket: `Net göç hızı (${meta.gocYil})`,
       sayi: (il) => il.gocHizi,
       yon: "yuksek",
       deger: (il) => (

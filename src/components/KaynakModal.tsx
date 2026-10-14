@@ -5,6 +5,7 @@ import Link from "next/link";
 import { BookMarked, ExternalLink, X } from "lucide-react";
 import { kaynakBilgileri, meta } from "@/lib/data";
 import { tarihStr } from "@/lib/format";
+import { kaydirmaKilidiAl } from "@/lib/kaydirma-kilidi";
 
 export default function KaynakModal({
   acik,
@@ -27,8 +28,7 @@ export default function KaynakModal({
       document.activeElement instanceof HTMLElement
         ? document.activeElement
         : null;
-    const govdeOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
+    const kilidiBirak = kaydirmaKilidiAl();
     modalRef.current?.focus();
 
     const tusla = (e: KeyboardEvent) => {
@@ -54,7 +54,7 @@ export default function KaynakModal({
     document.addEventListener("keydown", tusla);
     return () => {
       document.removeEventListener("keydown", tusla);
-      document.body.style.overflow = govdeOverflow;
+      kilidiBirak();
       oncekiOdakRef.current?.focus();
     };
   }, [acik]);

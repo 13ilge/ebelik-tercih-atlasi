@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { alimGetir, dataset, donemKadro, ilHaritasi, meta } from "@/lib/data";
 import { puanStr, sayi, tarihStr, tl } from "@/lib/format";
+import { kaydirmaKilidiAl } from "@/lib/kaydirma-kilidi";
 import type { Il } from "@/lib/types";
 import IlAraEkle from "./IlAraEkle";
 import IlDetay from "./IlDetay";
@@ -125,6 +126,7 @@ export default function AltPanel({
   };
 
   const surukleBasla = (e: React.PointerEvent, i: number) => {
+    if (e.button !== 0) return;
     surukleRef.current = i;
     setSuruklenen(i);
     const hareket = (ev: PointerEvent) => {
@@ -163,15 +165,14 @@ export default function AltPanel({
 
   useEffect(() => {
     if (!listeAcik) return;
-    const govdeOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
+    const kilidiBirak = kaydirmaKilidiAl();
     const tusla = (e: KeyboardEvent) => {
       if (e.key === "Escape") setListeAcik(false);
     };
     document.addEventListener("keydown", tusla);
     return () => {
       document.removeEventListener("keydown", tusla);
-      document.body.style.overflow = govdeOverflow;
+      kilidiBirak();
     };
   }, [listeAcik]);
 

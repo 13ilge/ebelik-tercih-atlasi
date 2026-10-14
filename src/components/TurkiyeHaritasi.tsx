@@ -29,6 +29,7 @@ interface Props {
   secililer: number[];
   aktif: number | null;
   onSec: (plaka: number) => void;
+  onCikar: (plaka: number) => void;
 }
 
 interface FareKonum {
@@ -59,6 +60,13 @@ function sinirla(x: number, y: number, k: number): { x: number; y: number } {
   };
 }
 
+function olayPlakasi(e: { target: EventTarget | null }): number | null {
+  const hedef = (e.target as Element | null)?.closest?.("[data-il-yolu]");
+  if (!hedef) return null;
+  const plaka = Number(hedef.getAttribute("data-plaka"));
+  return Number.isNaN(plaka) ? null : plaka;
+}
+
 export default function TurkiyeHaritasi({
   donem,
   mod,
@@ -66,6 +74,7 @@ export default function TurkiyeHaritasi({
   secililer,
   aktif,
   onSec,
+  onCikar,
 }: Props) {
   const kapRef = useRef<HTMLDivElement>(null);
   const svgRef = useRef<SVGSVGElement>(null);
@@ -100,6 +109,11 @@ export default function TurkiyeHaritasi({
   const sonDokunmaRef = useRef<{ t: number; x: number; y: number } | null>(
     null
   );
+  const sonTikRef = useRef<{
+    plaka: number;
+    yeniydi: boolean;
+    t: number;
+  } | null>(null);
 
   const ist = useMemo(() => donemIstatistigi(donem), [donem]);
 
@@ -145,6 +159,35 @@ export default function TurkiyeHaritasi({
   );
 
   const sifirla = useCallback(() => setGorunum({ k: 1, x: 0, y: 0 }), []);
+
+  const ilTikla = useCallback(
+    (e: React.MouseEvent, plaka: number) => {
+      if (e.detail > 1) return;
+      sonTikRef.current = {
+        plaka,
+        yeniydi: !secililer.includes(plaka),
+        t: Date.now(),
+      };
+      onSec(plaka);
+    },
+    [onSec, secililer]
+  );
+
+  const tikGeriAl = useCallback(
+    (plaka: number | null) => {
+      const son = sonTikRef.current;
+      sonTikRef.current = null;
+      if (
+        son &&
+        son.yeniydi &&
+        son.plaka === plaka &&
+        Date.now() - son.t < 1000
+      ) {
+        onCikar(son.plaka);
+      }
+    },
+    [onCikar]
+  );
 
   useEffect(() => {
     const el = svgRef.current;
@@ -295,6 +338,7 @@ export default function TurkiyeHaritasi({
           Math.hypot(e.clientX - onceki.x, e.clientY - onceki.y) < 30
         ) {
           const p = clientToView(e.clientX, e.clientY);
+          tikGeriAl(olayPlakasi(e));
           setGorunum((g) => {
             if (g.k > 1.5) return { k: 1, x: 0, y: 0 };
             const k2 = 2.6;
@@ -310,7 +354,7 @@ export default function TurkiyeHaritasi({
         }
       }
     },
-    [clientToView]
+    [clientToView, tikGeriAl]
   );
 
   const tikEngelle = useCallback((e: React.MouseEvent) => {
@@ -324,6 +368,7 @@ export default function TurkiyeHaritasi({
   const ciftTikla = useCallback(
     (e: React.MouseEvent<SVGSVGElement>) => {
       if (sonPointerTipiRef.current === "touch") return;
+      tikGeriAl(olayPlakasi(e));
       const p = clientToView(e.clientX, e.clientY);
       setGorunum((g) => {
         if (g.k > 1.5) return { k: 1, x: 0, y: 0 };
@@ -335,7 +380,7 @@ export default function TurkiyeHaritasi({
         return { k: k2, x: s.x, y: s.y };
       });
     },
-    [clientToView]
+    [clientToView, tikGeriAl]
   );
 
   const fareHareket = useCallback(
@@ -417,6 +462,7 @@ export default function TurkiyeHaritasi({
             puan={puan}
             renkler={renkler}
             onSec={onSec}
+            onTikla={ilTikla}
             onGir={girildi}
             onCik={cikildi}
           />
@@ -590,6 +636,7 @@ const HaritaCizim = memo(function HaritaCizim({
   puan,
   renkler,
   onSec,
+  onTikla,
   onGir,
   onCik,
 }: {
@@ -602,6 +649,7 @@ const HaritaCizim = memo(function HaritaCizim({
   puan: number | null;
   renkler: Map<number, string>;
   onSec: (plaka: number) => void;
+  onTikla: (e: React.MouseEvent, plaka: number) => void;
   onGir: (plaka: number) => void;
   onCik: () => void;
 }) {
@@ -625,6 +673,7 @@ const HaritaCizim = memo(function HaritaCizim({
           <path
             key={h.plaka}
             data-il-yolu
+            data-plaka={h.plaka}
             d={h.d}
             fill={renkler.get(h.plaka) ?? ALIM_YOK_RENK}
             stroke={secili ? "#0f172a" : "#ffffff"}
@@ -633,7 +682,7 @@ const HaritaCizim = memo(function HaritaCizim({
             role="button"
             aria-label={aria}
             tabIndex={0}
-            onClick={() => onSec(h.plaka)}
+            onClick={(e) => onTikla(e, h.plaka)}
             onKeyDown={(e) => {
               if (e.key === "Enter" || e.key === " ") {
                 e.preventDefault();

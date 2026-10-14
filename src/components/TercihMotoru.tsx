@@ -95,9 +95,13 @@ export default function TercihMotoru() {
         if (ham) {
           const kayit = JSON.parse(ham) as Partial<KayitliDurum>;
           if (Array.isArray(kayit.secililer)) {
-            const plakalar = kayit.secililer.filter(
-              (n) => typeof n === "number" && ilHaritasi.has(n)
-            );
+            const plakalar = [
+              ...new Set(
+                kayit.secililer.filter(
+                  (n) => typeof n === "number" && ilHaritasi.has(n)
+                )
+              ),
+            ];
             if (plakalar.length > 0) {
               setSecililer(plakalar);
               setAktif(
@@ -139,10 +143,14 @@ export default function TercihMotoru() {
       }
       const listeP = p.get("liste");
       if (listeP) {
-        const plakalar = listeP
-          .split(",")
-          .map((s) => Number.parseInt(s, 10))
-          .filter((n) => ilHaritasi.has(n));
+        const plakalar = [
+          ...new Set(
+            listeP
+              .split(",")
+              .map((s) => Number.parseInt(s, 10))
+              .filter((n) => ilHaritasi.has(n))
+          ),
+        ];
         if (plakalar.length > 0) {
           setSecililer(plakalar);
           setAktif(plakalar[plakalar.length - 1]);
@@ -369,6 +377,7 @@ export default function TercihMotoru() {
               secililer={secililer}
               aktif={aktif}
               onSec={ekle}
+              onCikar={cikar}
             />
           </div>
         )}

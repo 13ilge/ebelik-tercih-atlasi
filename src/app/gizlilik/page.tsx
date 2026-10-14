@@ -1,8 +1,6 @@
 import type { Metadata } from "next";
-import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
 import { kaynakBilgileri } from "@/lib/data";
-import Logo from "@/components/Logo";
+import AltSayfaBasligi from "@/components/AltSayfaBasligi";
 
 export const metadata: Metadata = {
   title: "Gizlilik ve Veri Kullanımı — Ebelik Tercih Atlası",
@@ -14,18 +12,7 @@ export const metadata: Metadata = {
 export default function GizlilikSayfasi() {
   return (
     <div className="min-h-dvh bg-slate-50">
-      <header className="border-b border-slate-200 bg-white">
-        <div className="mx-auto flex w-full max-w-5xl flex-wrap items-center gap-3 px-4 py-3">
-          <Link
-            href="/"
-            className="flex items-center gap-1.5 rounded-lg border border-slate-200 px-3 py-2 text-sm font-medium text-slate-700 transition hover:border-sky-300 hover:text-sky-800"
-          >
-            <ArrowLeft className="h-4 w-4" />
-            Haritaya dön
-          </Link>
-          <Logo boyut="sm" />
-        </div>
-      </header>
+      <AltSayfaBasligi bolum="Gizlilik" />
 
       <main className="mx-auto w-full max-w-3xl px-4 py-6">
         <h1 className="text-2xl font-bold tracking-tight text-slate-950 sm:text-3xl">

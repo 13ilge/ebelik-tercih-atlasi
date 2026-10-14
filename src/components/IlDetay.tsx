@@ -51,6 +51,7 @@ export default function IlDetay({
   const oneriler = ilOnerileri(il, {
     donem,
     medyanKira,
+    kiraDonem: meta.kiraDonem,
     tabanYuzdeligi: alim ? tabanYuzdeligi(donem, alim.taban) : null,
     taban: alim?.taban ?? null,
     kontenjan: alim?.kontenjan ?? null,
@@ -191,7 +192,7 @@ export default function IlDetay({
               deger={il.kira !== null ? tl(il.kira) : "—"}
               alt={
                 il.kira !== null && kiraOran !== null
-                  ? `TR ort. ${sayi(medyanKira)} TL'nin ${yuzde(
+                  ? `TR medyan ${sayi(Math.round(medyanKira))} TL'nin ${yuzde(
                       Math.abs(1 - kiraOran)
                     )} ${kiraOran <= 1 ? "altında" : "üzerinde"} · Endeksa verisi (${meta.kiraDonem})`
                   : `Endeksa'da bu il için veri yok (${meta.kiraDonem})`
@@ -209,7 +210,7 @@ export default function IlDetay({
             <IstatistikKutusu
               etiket="Doğum oranı"
               deger={puanStr(dogumOrani(il))}
-              alt={`bin kişi başına · TR ort. ${puanStr(trDogumOrani)} (TÜİK 2025)`}
+              alt={`bin kişi başına · TR ort. ${puanStr(trDogumOrani)} (TÜİK ${il.dogumYil})`}
               vurgu={dogumOrani(il) >= trDogumOrani * 1.15 ? "iyi" : undefined}
             />
             <IstatistikKutusu

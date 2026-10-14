@@ -6,7 +6,6 @@ const ist: DonemIstatistik = {
   donem: "2025/5",
   min: 70,
   max: 80,
-  medyan: 75,
   kadro: 100,
   tabanlar: [70, 75, 80],
 };

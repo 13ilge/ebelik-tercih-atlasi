@@ -184,8 +184,8 @@ const kadroToplam = Object.fromEntries(
   ])
 );
 
-const meta = {
-  insaTarihi: new Date().toISOString().slice(0, 10),
+const metaOlustur = (insaTarihi) => ({
+  insaTarihi,
   dogumYil: tuik[0]?.yil ?? null,
   nufusYil: tuik[0]?.yil ?? null,
   kiraDonem: "Eylül 2026",
@@ -193,14 +193,42 @@ const meta = {
   donemler,
   kadroToplam,
   varsayilanDonem: donemler[donemler.length - 1],
-};
+});
 
 const outDir = path.join(root, "src", "data");
 fs.mkdirSync(outDir, { recursive: true });
-fs.writeFileSync(
-  path.join(outDir, "provinces.generated.json"),
-  JSON.stringify({ meta, iller })
-);
+const outYolu = path.join(outDir, "provinces.generated.json");
+
+let oncekiIcerik = null;
+try {
+  oncekiIcerik = fs.readFileSync(outYolu, "utf8");
+} catch {
+  /* ilk derleme */
+}
+let oncekiTarih = null;
+if (oncekiIcerik !== null) {
+  try {
+    oncekiTarih = JSON.parse(oncekiIcerik)?.meta?.insaTarihi ?? null;
+  } catch {
+    oncekiTarih = null;
+  }
+}
+
+const ayniVeri =
+  typeof oncekiTarih === "string" &&
+  oncekiIcerik === JSON.stringify({ meta: metaOlustur(oncekiTarih), iller });
+
+if (ayniVeri) {
+  console.log("Veri değişmedi; dosya ve insaTarihi korundu.");
+} else {
+  fs.writeFileSync(
+    outYolu,
+    JSON.stringify({
+      meta: metaOlustur(new Date().toISOString().slice(0, 10)),
+      iller,
+    })
+  );
+}
 fs.copyFileSync(
   path.join(root, "data", "kaynaklar.json"),
   path.join(outDir, "kaynaklar.generated.json")

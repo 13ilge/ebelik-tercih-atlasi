@@ -48,6 +48,12 @@ export default function MobilIlArama({
   const [vurgu, setVurgu] = useState(0);
   const listeId = useId();
 
+  const [sonPuan, setSonPuan] = useState(puan);
+  if (puan !== sonPuan) {
+    setSonPuan(puan);
+    if (puan === null && siralama === "puanima") setSiralama("kolay");
+  }
+
   const ist = donemIstatistigi(donem);
   const gecerliSiralama: Siralama =
     siralama === "puanima" && puan === null ? "kolay" : siralama;

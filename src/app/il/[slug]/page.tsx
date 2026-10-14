@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, ArrowUpRight } from "lucide-react";
+import { Plus } from "lucide-react";
 import {
   dataset,
   dogumOrani,
@@ -18,7 +18,7 @@ import { HASTANE_RENK, HASTANE_TUR_ADI } from "@/lib/colors";
 import { puanStr, sayi, tarihStr, tl } from "@/lib/format";
 import { ilOnerileri } from "@/lib/insights";
 import { SITE_URL } from "@/lib/site";
-import Logo from "@/components/Logo";
+import AltSayfaBasligi from "@/components/AltSayfaBasligi";
 
 export const instant = false;
 
@@ -76,6 +76,7 @@ export default async function IlSayfasi(props: PageProps<"/il/[slug]">) {
   const oneriler = ilOnerileri(il, {
     donem: son.donem,
     medyanKira,
+    kiraDonem: meta.kiraDonem,
     tabanYuzdeligi: yuzdelik,
     taban: son.taban,
     kontenjan: son.kontenjan,
@@ -128,28 +129,15 @@ export default async function IlSayfasi(props: PageProps<"/il/[slug]">) {
           __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c"),
         }}
       />
-      <header className="border-b border-slate-200 bg-white">
-        <div className="mx-auto flex w-full max-w-5xl flex-wrap items-center gap-3 px-4 py-3">
-          <Link
-            href="/"
-            className="flex items-center gap-1.5 rounded-lg border border-slate-200 px-3 py-2 text-sm font-medium text-slate-700 transition hover:border-sky-300 hover:text-sky-800"
-          >
-            <ArrowLeft className="h-4 w-4" />
-            Haritaya dön
-          </Link>
-          <span className="flex items-center gap-2">
-            <Logo boyut="sm" />
-            <span className="text-sm text-slate-500">· İl sayfası</span>
-          </span>
-          <Link
-            href={`/?il=${slug}`}
-            className="ml-auto flex items-center gap-1.5 rounded-lg bg-sky-700 px-3.5 py-2 text-sm font-medium text-white transition hover:bg-sky-800"
-          >
-            Haritada incele
-            <ArrowUpRight className="h-4 w-4" />
-          </Link>
-        </div>
-      </header>
+      <AltSayfaBasligi bolum="İl sayfası">
+        <Link
+          href={`/?il=${slug}`}
+          className="ml-auto flex items-center gap-1.5 rounded-lg bg-sky-700 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-sky-800"
+        >
+          <Plus className="h-4 w-4" />
+          Listeme ekle ve haritada incele
+        </Link>
+      </AltSayfaBasligi>
 
       <main className="mx-auto w-full max-w-5xl px-4 py-6">
         <div className="flex flex-wrap items-center gap-3">
@@ -217,7 +205,7 @@ export default async function IlSayfasi(props: PageProps<"/il/[slug]">) {
             </div>
             <div className="mt-1 text-xs text-slate-500">
               {il.kira !== null
-                ? `TR ort. ${tl(medyanKira)} · Endeksa verisi (${meta.kiraDonem})`
+                ? `TR medyan ${tl(Math.round(medyanKira))} · Endeksa verisi (${meta.kiraDonem})`
                 : `Endeksa'da bu il için veri yok (${meta.kiraDonem})`}
             </div>
           </div>

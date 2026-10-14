@@ -45,14 +45,16 @@ export interface UygunlukSonuc {
   etiket: string;
 }
 
+export const UYGUNLUK_ESIGI = 1.5;
+
 export function uygunlukSonucu(margin: number | null): UygunlukSonuc {
   if (margin === null)
     return { anahtar: "yok", renk: ALIM_YOK_RENK, etiket: "Alım yok" };
-  if (margin >= 1.5)
+  if (margin >= UYGUNLUK_ESIGI)
     return { anahtar: "rahat", renk: "#059669", etiket: "Rahat" };
   if (margin >= 0)
     return { anahtar: "muhtemel", renk: "#4ade80", etiket: "Muhtemel" };
-  if (margin >= -1.5)
+  if (margin >= -UYGUNLUK_ESIGI)
     return { anahtar: "sinirda", renk: "#fbbf24", etiket: "Sınırda" };
   return { anahtar: "zor", renk: "#f87171", etiket: "Zor" };
 }
@@ -60,7 +62,10 @@ export function uygunlukSonucu(margin: number | null): UygunlukSonuc {
 export const UYGUNLUK_ACIKLAMA: Record<UygunlukSonuc["anahtar"], string> = {
   rahat: "Puanın son tabanın belirgin üstünde",
   muhtemel: "Puanın son tabana yakın veya üstünde",
-  sinirda: "Puanın son tabanın 1,5 puan altına kadar",
+  sinirda: `Puanın son tabanın ${String(UYGUNLUK_ESIGI).replace(
+    ".",
+    ","
+  )} puan altına kadar`,
   zor: "Puanın son tabanın belirgin altında",
   yok: "Seçili dönemde bu ile ebe kadrosu verilmedi",
 };

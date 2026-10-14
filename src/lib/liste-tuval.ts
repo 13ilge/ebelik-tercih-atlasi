@@ -26,6 +26,26 @@ function monoAile(): string {
   return monoAilesi;
 }
 
+function sarmala(
+  ctx: CanvasRenderingContext2D,
+  metin: string,
+  maksGenislik: number
+): string[] {
+  const satirlar: string[] = [];
+  let satir = "";
+  for (const kelime of metin.split(/\s+/).filter(Boolean)) {
+    const deneme = satir ? `${satir} ${kelime}` : kelime;
+    if (satir && ctx.measureText(deneme).width > maksGenislik) {
+      satirlar.push(satir);
+      satir = kelime;
+    } else {
+      satir = deneme;
+    }
+  }
+  if (satir) satirlar.push(satir);
+  return satirlar;
+}
+
 export function listeTuvaliCiz(
   opts: ListeTuvaliSecenekleri,
   W = 1080,
@@ -34,14 +54,20 @@ export function listeTuvaliCiz(
   const ol = W / 1080;
   const SATIR = 64 * ol;
   const UST = 210 * ol;
-  const ALT = 158 * ol;
-  const icerikY = UST + opts.satirlar.length * SATIR + ALT;
-  const H = Math.round(Math.max(icerikY, minYukseklik ?? 0));
+  const dipnotYazisi = `400 ${Math.round(22 * ol)}px Arial, sans-serif`;
 
   const canvas = document.createElement("canvas");
   canvas.width = W;
-  canvas.height = H;
   const ctx = canvas.getContext("2d");
+  if (ctx) ctx.font = dipnotYazisi;
+  const satirlarDipnot = ctx
+    ? sarmala(ctx, opts.dipnot, W - 96 * ol)
+    : opts.dipnot.split(/\s+/).filter(Boolean);
+  const dipnotSatirSayisi = Math.max(satirlarDipnot.length, 1);
+  const ALT = (158 + Math.max(0, dipnotSatirSayisi - 2) * 32) * ol;
+  const icerikY = UST + opts.satirlar.length * SATIR + ALT;
+  const H = Math.round(Math.max(icerikY, minYukseklik ?? 0));
+  canvas.height = H;
   if (!ctx) return canvas;
 
   ctx.textBaseline = "middle";
@@ -87,14 +113,14 @@ export function listeTuvaliCiz(
   });
 
   const altY = H;
+  const dipnotIlkSatirY =
+    altY - 64 * ol - (dipnotSatirSayisi - 1) * 32 * ol;
   ctx.fillStyle = "#94a3b8";
-  ctx.fillRect(48 * ol, altY - 132 * ol, W - 96 * ol, 1);
+  ctx.fillRect(48 * ol, dipnotIlkSatirY - 36 * ol, W - 96 * ol, 1);
   ctx.fillStyle = "#64748b";
-  ctx.font = `400 ${Math.round(22 * ol)}px Arial, sans-serif`;
-  const satirlarDipnot =
-    opts.dipnot.match(/.{1,86}(\s|$)/g) ?? [opts.dipnot];
-  satirlarDipnot.slice(0, 2).forEach((satir, i) => {
-    ctx.fillText(satir.trim(), 48 * ol, altY - 96 * ol + i * 32 * ol);
+  ctx.font = dipnotYazisi;
+  satirlarDipnot.forEach((satir, i) => {
+    ctx.fillText(satir, 48 * ol, dipnotIlkSatirY + i * 32 * ol);
   });
 
   ctx.fillStyle = "#0369a1";

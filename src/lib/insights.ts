@@ -9,10 +9,14 @@ export interface Oneri {
 export interface OneriBaglami {
   donem: string;
   medyanKira: number;
+  kiraDonem: string;
   tabanYuzdeligi: number | null;
   taban: number | null;
   kontenjan: number | null;
 }
+
+const BOL_KONTENJAN = 25;
+const KIT_KONTENJAN = 3;
 
 export function ilOnerileri(il: Il, ctx: OneriBaglami): Oneri[] {
   const artilar: Oneri[] = [];
@@ -23,20 +27,20 @@ export function ilOnerileri(il: Il, ctx: OneriBaglami): Oneri[] {
     if (kiraOran <= 0.8) {
       artilar.push({
         arti: true,
-        metin: `Ortalama kira Türkiye ortalamasının %${Math.round(
+        metin: `Ortalama kira Türkiye medyanının %${Math.round(
           (1 - kiraOran) * 100
-        )} altında (~${sayi(il.kira)} TL; TR ort. ~${sayi(
-          ctx.medyanKira
-        )} TL — Endeksa, Eylül 2026)`,
+        )} altında (~${sayi(il.kira)} TL; TR medyan ~${sayi(
+          Math.round(ctx.medyanKira)
+        )} TL — Endeksa, ${ctx.kiraDonem})`,
       });
     } else if (kiraOran >= 1.2) {
       eksiler.push({
         arti: false,
-        metin: `Ortalama kira Türkiye ortalamasının %${Math.round(
+        metin: `Ortalama kira Türkiye medyanının %${Math.round(
           (kiraOran - 1) * 100
-        )} üzerinde (~${sayi(il.kira)} TL; TR ort. ~${sayi(
-          ctx.medyanKira
-        )} TL — Endeksa, Eylül 2026)`,
+        )} üzerinde (~${sayi(il.kira)} TL; TR medyan ~${sayi(
+          Math.round(ctx.medyanKira)
+        )} TL — Endeksa, ${ctx.kiraDonem})`,
       });
     }
   }
@@ -55,15 +59,15 @@ export function ilOnerileri(il: Il, ctx: OneriBaglami): Oneri[] {
       arti: false,
       metin: `${ctx.donem} döneminde bu ile ebe kadrosu verilmedi`,
     });
-  } else if (ctx.kontenjan >= 25) {
+  } else if (ctx.kontenjan >= BOL_KONTENJAN) {
     artilar.push({
       arti: true,
       metin: `${ctx.donem} döneminde ${ctx.kontenjan} ebe kadrosu açıldı — kontenjan boldur`,
     });
-  } else if (ctx.kontenjan <= 3) {
+  } else if (ctx.kontenjan <= KIT_KONTENJAN) {
     eksiler.push({
       arti: false,
-      metin: `${ctx.donem} döneminde yalnızca ${ctx.kontenjan} ebe kadrosu açıldı — taban puan yükselme eğilimindedir`,
+      metin: `${ctx.donem} döneminde yalnızca ${ctx.kontenjan} ebe kadrosu açıldı — kontenjan çok sınırlı`,
     });
   }
 
