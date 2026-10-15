@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { kaynakBilgileri } from "@/lib/data";
+import { ILETISIM_EPOSTA } from "@/lib/site";
 import AltSayfaBasligi from "@/components/AltSayfaBasligi";
 
 export const metadata: Metadata = {
@@ -80,6 +81,19 @@ export default function GizlilikSayfasi() {
             </p>
           </section>
 
+          <section className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+            <h2 className="text-lg font-bold text-slate-900">İletişim</h2>
+            <p className="mt-2 text-sm leading-relaxed text-slate-700">
+              Soru, görüş, veri düzeltme talebi ve telif bildirimleri için:{" "}
+              <a
+                href={`mailto:${ILETISIM_EPOSTA}`}
+                className="font-medium text-sky-700 underline underline-offset-2 hover:text-sky-800"
+              >
+                {ILETISIM_EPOSTA}
+              </a>
+            </p>
+          </section>
+
           <section className="rounded-xl border border-amber-200 bg-amber-50 p-4">
             <h2 className="text-lg font-bold text-amber-900">
               Veri kaynakları
@@ -121,7 +135,13 @@ export default function GizlilikSayfasi() {
       <footer className="border-t border-slate-200 bg-white py-6">
         <div className="mx-auto w-full max-w-3xl px-4 text-xs text-slate-500">
           Ebelik Tercih Atlası — KPSS lisans (P3) ebelik atamaları için
-          bağımsız bilgilendirme aracı.
+          bağımsız bilgilendirme aracı.{" "}
+          <a
+            href={`mailto:${ILETISIM_EPOSTA}`}
+            className="font-medium text-sky-800 underline underline-offset-2 hover:text-sky-900"
+          >
+            İletişim
+          </a>
         </div>
       </footer>
     </div>

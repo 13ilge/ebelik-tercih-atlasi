@@ -18,7 +18,7 @@ import {
 import { HASTANE_RENK, HASTANE_TUR_ADI } from "@/lib/colors";
 import { puanStr, sayi, tarihStr, tl } from "@/lib/format";
 import { ilOnerileri } from "@/lib/insights";
-import { SITE_URL } from "@/lib/site";
+import { ILETISIM_EPOSTA, SITE_URL } from "@/lib/site";
 import type { Il } from "@/lib/types";
 import AltSayfaBasligi from "@/components/AltSayfaBasligi";
 import BenzerPuanliIller from "@/components/BenzerPuanliIller";
@@ -398,7 +398,14 @@ export default async function IlSayfasi(props: PageProps<"/il/[slug]">) {
             className="font-medium text-sky-800 underline underline-offset-2 hover:text-sky-900"
           >
             Gizlilik
-          </Link>
+          </Link>{" "}
+          ·{" "}
+          <a
+            href={`mailto:${ILETISIM_EPOSTA}`}
+            className="font-medium text-sky-800 underline underline-offset-2 hover:text-sky-900"
+          >
+            İletişim
+          </a>
         </div>
       </footer>
     </div>

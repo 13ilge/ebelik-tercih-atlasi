@@ -17,6 +17,7 @@ import {
 import { alimGetir, dataset, donemKadro, ilHaritasi, meta } from "@/lib/data";
 import { puanStr, sayi, tarihStr, tl } from "@/lib/format";
 import { kaydirmaKilidiAl } from "@/lib/kaydirma-kilidi";
+import { ILETISIM_EPOSTA } from "@/lib/site";
 import type { Il } from "@/lib/types";
 import IlAraEkle from "./IlAraEkle";
 import IlDetay from "./IlDetay";
@@ -506,6 +507,12 @@ export default function AltPanel({
             >
               Gizlilik
             </Link>
+            <a
+              href={`mailto:${ILETISIM_EPOSTA}`}
+              className="py-1 font-medium text-slate-500 underline underline-offset-2 transition hover:text-sky-800"
+            >
+              İletişim
+            </a>
           </span>
         </div>
       </div>

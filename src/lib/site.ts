@@ -15,3 +15,5 @@ const ham =
     : "http://localhost:3000");
 
 export const SITE_URL = ham.replace(/\/+$/, "");
+
+export const ILETISIM_EPOSTA = "ebeliktercihatlasi@gmail.com";
