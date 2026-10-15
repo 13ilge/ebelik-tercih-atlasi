@@ -164,9 +164,6 @@ export default async function IlSayfasi(props: PageProps<"/il/[slug]">) {
 
       <main className="mx-auto w-full max-w-5xl px-4 py-6">
         <div className="flex flex-wrap items-center gap-3">
-          <span className="font-mono text-lg font-semibold tabular-nums text-slate-500">
-            {il.plaka.toString().padStart(2, "0")}
-          </span>
           <h1 className="text-2xl font-bold tracking-tight text-slate-950 sm:text-3xl">
             {il.ad} Ebe Taban Puanları
           </h1>
@@ -236,7 +233,7 @@ export default async function IlSayfasi(props: PageProps<"/il/[slug]">) {
             </div>
             <div className="mt-1 text-xs text-slate-500">
               {il.kira !== null
-                ? `TR medyan ${tl(Math.round(medyanKira))} · Endeksa verisi (${meta.kiraDonem})`
+                ? `TR ortalama ${tl(Math.round(medyanKira))} · Endeksa verisi (${meta.kiraDonem})`
                 : `Endeksa'da bu il için veri yok (${meta.kiraDonem})`}
             </div>
           </div>

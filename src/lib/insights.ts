@@ -27,18 +27,18 @@ export function ilOnerileri(il: Il, ctx: OneriBaglami): Oneri[] {
     if (kiraOran <= 0.8) {
       artilar.push({
         arti: true,
-        metin: `Ortalama kira Türkiye medyanının %${Math.round(
+        metin: `Ortalama kira Türkiye ortalamasının %${Math.round(
           (1 - kiraOran) * 100
-        )} altında (~${sayi(il.kira)} TL; TR medyan ~${sayi(
+        )} altında (~${sayi(il.kira)} TL; TR ortalama ~${sayi(
           Math.round(ctx.medyanKira)
         )} TL — Endeksa, ${ctx.kiraDonem})`,
       });
     } else if (kiraOran >= 1.2) {
       eksiler.push({
         arti: false,
-        metin: `Ortalama kira Türkiye medyanının %${Math.round(
+        metin: `Ortalama kira Türkiye ortalamasının %${Math.round(
           (kiraOran - 1) * 100
-        )} üzerinde (~${sayi(il.kira)} TL; TR medyan ~${sayi(
+        )} üzerinde (~${sayi(il.kira)} TL; TR ortalama ~${sayi(
           Math.round(ctx.medyanKira)
         )} TL — Endeksa, ${ctx.kiraDonem})`,
       });

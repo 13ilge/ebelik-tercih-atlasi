@@ -525,12 +525,7 @@ export default function TurkiyeHaritasi({
             <span className="text-base font-semibold text-slate-950">
               {hoverIl.ad}
             </span>
-            <span className="text-xs text-slate-500">
-              <span className="font-mono tabular-nums">
-                {hoverIl.plaka.toString().padStart(2, "0")}
-              </span>{" "}
-              · {hoverIl.bolge}
-            </span>
+            <span className="text-xs text-slate-500">{hoverIl.bolge}</span>
           </div>
           <div className="mt-2 space-y-1 text-xs text-slate-600">
             <div className="flex justify-between">

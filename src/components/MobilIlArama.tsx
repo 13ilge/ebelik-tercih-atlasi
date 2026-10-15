@@ -94,11 +94,6 @@ export default function MobilIlArama({
     return [...liste].sort((a, b) => karsilastir(a, b, nq));
   }, [sorgu, bolge, karsilastir]);
 
-  const oneriler = useMemo(() => {
-    const alimlilar = dataset.iller.filter((il) => alimGetir(il, donem));
-    return [...alimlilar].sort((a, b) => karsilastir(a, b, "")).slice(0, 5);
-  }, [donem, karsilastir]);
-
   const goster = acik && sorgu.trim().length > 0;
   const etkinVurgu =
     sonuclar.length === 0 ? -1 : Math.min(vurgu, sonuclar.length - 1);
@@ -181,29 +176,6 @@ export default function MobilIlArama({
           )}
         </div>
       </div>
-
-      {!goster && oneriler.length > 0 && (
-        <div className="flex items-center gap-1.5 overflow-x-auto px-3 py-2">
-          <span className="shrink-0 text-xs font-medium text-slate-400">
-            {puan !== null ? "Sana en uygun:" : "En kolay:"}
-          </span>
-          {oneriler.map((il) => {
-            const alim = alimGetir(il, donem);
-            return (
-              <button
-                key={il.plaka}
-                onClick={() => sec(il.plaka)}
-                className="shrink-0 whitespace-nowrap rounded-full border border-slate-200 bg-white px-3 py-2 text-xs font-medium text-slate-700 transition active:bg-sky-50"
-              >
-                {il.ad}{" "}
-                <span className="tabular-nums text-slate-400">
-                  {alim ? puanStr(alim.taban) : ""}
-                </span>
-              </button>
-            );
-          })}
-        </div>
-      )}
 
       {goster && (
         <div

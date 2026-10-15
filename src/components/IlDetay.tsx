@@ -64,17 +64,14 @@ export default function IlDetay({
   return (
     <div className="space-y-3">
       <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
-        <span className="font-mono text-sm font-semibold tabular-nums text-slate-500">
-          {il.plaka.toString().padStart(2, "0")}
-        </span>
         <h2 className="text-xl font-bold text-slate-900">{il.ad}</h2>
         <span className="rounded-md bg-sky-50 px-2 py-0.5 text-xs font-medium text-sky-800">
           {il.bolge}
         </span>
-        <div className="ml-auto flex items-center gap-2">
+        <div className="ml-auto flex items-center gap-2 max-sm:w-full">
           <Link
             href={`/il/${ilSlug(il)}`}
-            className="flex items-center gap-1.5 rounded-lg border border-slate-200 px-3.5 py-2 text-sm font-medium text-slate-600 transition hover:border-sky-300 hover:text-sky-800"
+            className="flex items-center justify-center gap-1.5 rounded-lg border border-slate-200 px-3.5 py-2 text-sm font-medium text-slate-600 transition hover:border-sky-300 hover:text-sky-800 max-sm:flex-1"
           >
             <ExternalLink className="h-3.5 w-3.5" />
             İl sayfası
@@ -82,14 +79,14 @@ export default function IlDetay({
           {secili ? (
             <button
               onClick={() => onCikar(il.plaka)}
-              className="rounded-lg border border-slate-200 px-3.5 py-2 text-sm font-medium text-slate-700 transition hover:border-red-200 hover:bg-red-50 hover:text-red-700"
+              className="rounded-lg border border-slate-200 px-3.5 py-2 text-sm font-medium text-slate-700 transition hover:border-red-200 hover:bg-red-50 hover:text-red-700 max-sm:flex-1"
             >
               Listeden çıkar
             </button>
           ) : (
             <button
               onClick={() => onEkle(il.plaka)}
-              className="rounded-lg bg-sky-700 px-3.5 py-2 text-sm font-medium text-white transition hover:bg-sky-800"
+              className="rounded-lg bg-sky-700 px-3.5 py-2 text-sm font-medium text-white transition hover:bg-sky-800 max-sm:flex-1"
             >
               + Tercih listeme ekle
             </button>
@@ -192,7 +189,7 @@ export default function IlDetay({
               deger={il.kira !== null ? tl(il.kira) : "—"}
               alt={
                 il.kira !== null && kiraOran !== null
-                  ? `TR medyan ${sayi(Math.round(medyanKira))} TL'nin ${yuzde(
+                  ? `TR ortalama ${sayi(Math.round(medyanKira))} TL'nin ${yuzde(
                       Math.abs(1 - kiraOran)
                     )} ${kiraOran <= 1 ? "altında" : "üzerinde"} · Endeksa verisi (${meta.kiraDonem})`
                   : `Endeksa'da bu il için veri yok (${meta.kiraDonem})`

@@ -113,9 +113,7 @@ export default async function Gorsel({
             color: "#64748b",
           }}
         >
-          <span>
-            {il ? `${il.plaka.toString().padStart(2, "0")} · ${il.ad}` : ""}
-          </span>
+          <span>{il ? il.ad : ""}</span>
           <span>Veriler kamuya açık kaynaklardan derlenmiştir</span>
         </div>
       </div>
