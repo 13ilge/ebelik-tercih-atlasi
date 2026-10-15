@@ -30,7 +30,7 @@ await sayfa.click('path[aria-label^="Ankara"]');
 await sayfa.waitForTimeout(700);
 await sayfa.screenshot({ path: `${outDir}/02-detay.png` });
 
-await sayfa.fill('input[placeholder="örn. 78,456"]', "78,4");
+await sayfa.fill('input[placeholder="Puanını gir (örn. 78,456)"]', "78,4");
 await sayfa.waitForTimeout(900);
 await sayfa.screenshot({ path: `${outDir}/03-puan.png` });
 

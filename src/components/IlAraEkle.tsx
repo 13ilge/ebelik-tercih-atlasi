@@ -74,7 +74,7 @@ export default function IlAraEkle({
 
   return (
     <div ref={kapsayiciRef} onBlur={odakCikti} className="relative">
-      <div className="flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-2 py-1.5 focus-within:border-sky-400">
+      <div className="flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-2 py-1.5 transition focus-within:border-sky-400 focus-within:ring-2 focus-within:ring-sky-100">
         {sorgu && !goster ? (
           <Plus className="h-3.5 w-3.5 text-sky-600" />
         ) : (

@@ -81,93 +81,156 @@ export default function KarsilastirmaTablosu({
     },
   ];
 
+  const enIyiDegerler = new Map<string, number | null>(
+    satirlar.map((satir) => {
+      const degerler = iller
+        .map((il) => (satir.sayi ? satir.sayi(il) : null))
+        .filter((v): v is number => v !== null);
+      const enIyi =
+        satir.yon && degerler.length > 1
+          ? satir.yon === "dusuk"
+            ? Math.min(...degerler)
+            : Math.max(...degerler)
+          : null;
+      return [satir.etiket, enIyi];
+    })
+  );
+
   return (
-    <div className="overflow-x-auto rounded-xl border border-slate-200 bg-white shadow-sm">
-      <table className="w-full border-collapse text-sm">
-        <thead>
-          <tr className="border-b border-slate-200 bg-slate-50">
-            <th
-              scope="col"
-              className="sticky left-0 z-10 min-w-40 whitespace-nowrap bg-slate-50 px-3 py-2 text-left font-medium text-slate-500"
+    <div className="space-y-3">
+      <div className="space-y-3 lg:hidden">
+        {iller.map((il) => {
+          const a = puan !== null ? alimGetir(il, donem) : undefined;
+          const sonuc = uygunlukSonucu(puan !== null && a ? puan - a.taban : null);
+          return (
+            <div
+              key={il.plaka}
+              className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm"
             >
-              Karşılaştırma
-            </th>
-            {iller.map((il) => (
-              <th
-                key={il.plaka}
-                scope="col"
-                className="min-w-40 whitespace-nowrap px-3 py-2 text-left font-semibold text-slate-800"
-              >
+              <div className="border-b border-slate-100 bg-slate-50 px-3.5 py-2.5 text-base font-semibold text-slate-800">
                 {il.ad}
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {puan !== null && (
-            <tr className="border-b border-slate-100 bg-sky-50/40">
-              <td className="sticky left-0 z-10 whitespace-nowrap bg-sky-50/80 px-3 py-2 font-medium text-slate-500">
-                Puanına uygunluk
-              </td>
-              {iller.map((il) => {
-                const a = alimGetir(il, donem);
-                const sonuc = uygunlukSonucu(a ? puan - a.taban : null);
+              </div>
+              {puan !== null && (
+                <div className="flex items-center justify-between gap-3 border-b border-slate-100 px-3.5 py-2 text-sm">
+                  <span className="text-slate-500">Puanına uygunluk</span>
+                  <span className="inline-flex items-center gap-1.5 font-medium text-slate-700">
+                    <span
+                      className="h-2.5 w-2.5 rounded-full"
+                      style={{ background: sonuc.renk }}
+                    />
+                    {sonuc.etiket}
+                  </span>
+                </div>
+              )}
+              {satirlar.map((satir) => {
+                const v = satir.sayi ? satir.sayi(il) : null;
+                const enIyi = enIyiDegerler.get(satir.etiket) ?? null;
+                const iyi = enIyi !== null && v === enIyi;
                 return (
-                  <td key={il.plaka} className="whitespace-nowrap px-3 py-2">
-                    <span className="inline-flex items-center gap-1.5 font-medium text-slate-700">
-                      <span
-                        className="h-2.5 w-2.5 rounded-full"
-                        style={{ background: sonuc.renk }}
-                      />
-                      {sonuc.etiket}
-                    </span>
-                  </td>
-                );
-              })}
-            </tr>
-          )}
-          {satirlar.map((satir) => {
-            const degerler = iller
-              .map((il) => (satir.sayi ? satir.sayi(il) : null))
-              .filter((v): v is number => v !== null);
-            const enIyi =
-              satir.yon && degerler.length > 1
-                ? satir.yon === "dusuk"
-                  ? Math.min(...degerler)
-                  : Math.max(...degerler)
-                : null;
-            return (
-              <tr
-                key={satir.etiket}
-                className="border-b border-slate-100 last:border-0"
-              >
-                <td className="sticky left-0 z-10 whitespace-nowrap bg-white px-3 py-2 font-medium text-slate-500">
-                  {satir.etiket}
-                </td>
-                {iller.map((il) => {
-                  const v = satir.sayi ? satir.sayi(il) : null;
-                  const iyi = enIyi !== null && v === enIyi;
-                  return (
-                    <td
-                      key={il.plaka}
-                      className={`whitespace-nowrap px-3 py-2 ${
+                  <div
+                    key={satir.etiket}
+                    className="flex items-center justify-between gap-3 border-b border-slate-100 px-3.5 py-2 text-sm last:border-0"
+                  >
+                    <span className="text-slate-500">{satir.etiket}</span>
+                    <span
+                      className={
                         iyi ? "font-semibold text-emerald-700" : "text-slate-700"
-                      }`}
+                      }
                     >
                       {satir.deger(il)}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+          );
+        })}
+        <p className="px-1 text-xs leading-relaxed text-slate-400">
+          Yeşil değerler o satırdaki görece en avantajlı ili gösterir. Taban
+          puan ve kira için düşük, kontenjan için yüksek olan iyidir; doğum ve
+          nüfus nötr bilgilerdir.
+        </p>
+      </div>
+
+      <div className="hidden overflow-x-auto rounded-xl border border-slate-200 bg-white shadow-sm lg:block">
+        <table className="w-full border-collapse text-sm">
+          <thead>
+            <tr className="border-b border-slate-200 bg-slate-50">
+              <th
+                scope="col"
+                className="sticky left-0 z-10 min-w-40 whitespace-nowrap bg-slate-50 px-3 py-2 text-left font-medium text-slate-500"
+              >
+                Karşılaştırma
+              </th>
+              {iller.map((il) => (
+                <th
+                  key={il.plaka}
+                  scope="col"
+                  className="min-w-40 whitespace-nowrap px-3 py-2 text-left font-semibold text-slate-800"
+                >
+                  {il.ad}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {puan !== null && (
+              <tr className="border-b border-slate-100 bg-sky-50/40">
+                <td className="sticky left-0 z-10 whitespace-nowrap bg-sky-50/80 px-3 py-2 font-medium text-slate-500">
+                  Puanına uygunluk
+                </td>
+                {iller.map((il) => {
+                  const a = alimGetir(il, donem);
+                  const sonuc = uygunlukSonucu(a ? puan - a.taban : null);
+                  return (
+                    <td key={il.plaka} className="whitespace-nowrap px-3 py-2">
+                      <span className="inline-flex items-center gap-1.5 font-medium text-slate-700">
+                        <span
+                          className="h-2.5 w-2.5 rounded-full"
+                          style={{ background: sonuc.renk }}
+                        />
+                        {sonuc.etiket}
+                      </span>
                     </td>
                   );
                 })}
               </tr>
-            );
-          })}
-        </tbody>
-      </table>
-      <p className="border-t border-slate-100 px-3 py-2 text-xs text-slate-400">
-        Yeşil değerler o satırdaki görece en avantajlı ili gösterir. Taban puan
-        ve kira için düşük, kontenjan için yüksek olan iyidir; doğum ve nüfus
-        nötr bilgilerdir.
-      </p>
+            )}
+            {satirlar.map((satir) => {
+              const enIyi = enIyiDegerler.get(satir.etiket) ?? null;
+              return (
+                <tr
+                  key={satir.etiket}
+                  className="border-b border-slate-100 last:border-0"
+                >
+                  <td className="sticky left-0 z-10 whitespace-nowrap bg-white px-3 py-2 font-medium text-slate-500">
+                    {satir.etiket}
+                  </td>
+                  {iller.map((il) => {
+                    const v = satir.sayi ? satir.sayi(il) : null;
+                    const iyi = enIyi !== null && v === enIyi;
+                    return (
+                      <td
+                        key={il.plaka}
+                        className={`whitespace-nowrap px-3 py-2 ${
+                          iyi ? "font-semibold text-emerald-700" : "text-slate-700"
+                        }`}
+                      >
+                        {satir.deger(il)}
+                      </td>
+                    );
+                  })}
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+        <p className="border-t border-slate-100 px-3 py-2 text-xs text-slate-400">
+          Yeşil değerler o satırdaki görece en avantajlı ili gösterir. Taban
+          puan ve kira için düşük, kontenjan için yüksek olan iyidir; doğum ve
+          nüfus nötr bilgilerdir.
+        </p>
+      </div>
     </div>
   );
 }

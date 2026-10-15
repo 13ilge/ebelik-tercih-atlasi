@@ -386,7 +386,7 @@ export default function AltPanel({
       tabIndex={-1}
       onMouseEnter={onFareGiris}
       className={`flex min-h-0 flex-1 flex-col border-t border-slate-200 bg-slate-50 transition-[height] duration-300 ease-out outline-none motion-reduce:transition-none lg:flex-none ${
-        genis ? "lg:h-[76dvh]" : "lg:h-[50dvh]"
+        genis ? "lg:h-[76dvh]" : "lg:h-[46dvh]"
       }`}
     >
       <div className="flex-1 overflow-y-auto p-3 lg:p-4">
@@ -424,7 +424,7 @@ export default function AltPanel({
               className={`hidden shrink-0 rounded-xl border border-slate-200 bg-white p-3 shadow-sm lg:flex lg:order-1 lg:w-80 lg:flex-col ${
                 genis
                   ? "lg:max-h-[calc(76dvh-2rem)]"
-                  : "lg:max-h-[calc(50dvh-2rem)]"
+                  : "lg:max-h-[calc(46dvh-2rem)]"
               }`}
             >
               {listeIcerigi(false)}

@@ -436,12 +436,7 @@ export default function TurkiyeHaritasi({
           yakinlastirilabilir ? "cursor-grab active:cursor-grabbing" : ""
         }`}
         preserveAspectRatio="xMidYMid meet"
-        style={
-          {
-            touchAction: "none",
-            "--zoom": gorunum.k,
-          } as React.CSSProperties
-        }
+        style={{ touchAction: "none" }}
         role="group"
         aria-label="Türkiye ebe atama taban puanları haritası"
         onPointerDown={isaretciBasla}
@@ -456,17 +451,26 @@ export default function TurkiyeHaritasi({
         >
           <HaritaCizim
             donem={donem}
+            secililer={secililer}
+            aktif={aktif}
+            hover={hover}
+            renkler={renkler}
+            onSec={onSec}
+            onTikla={ilTikla}
+            onGir={girildi}
+            onCik={cikildi}
+          />
+        </g>
+        <g transform={`translate(${gorunum.x} ${gorunum.y})`}>
+          <HaritaEtiketleri
+            donem={donem}
             mod={mod}
             secililer={secililer}
             aktif={aktif}
             monte={monte}
             hover={hover}
             puan={puan}
-            renkler={renkler}
-            onSec={onSec}
-            onTikla={ilTikla}
-            onGir={girildi}
-            onCik={cikildi}
+            k={gorunum.k}
           />
         </g>
       </svg>
@@ -632,12 +636,9 @@ function Legend({ donem, mod }: { donem: string; mod: Mod }) {
 
 const HaritaCizim = memo(function HaritaCizim({
   donem,
-  mod,
   secililer,
   aktif,
-  monte,
   hover,
-  puan,
   renkler,
   onSec,
   onTikla,
@@ -645,12 +646,9 @@ const HaritaCizim = memo(function HaritaCizim({
   onCik,
 }: {
   donem: string;
-  mod: Mod;
   secililer: number[];
   aktif: number | null;
-  monte: boolean;
   hover: number | null;
-  puan: number | null;
   renkler: Map<number, string>;
   onSec: (plaka: number) => void;
   onTikla: (e: React.MouseEvent, plaka: number) => void;
@@ -683,6 +681,7 @@ const HaritaCizim = memo(function HaritaCizim({
             stroke={secili ? "#0f172a" : "#ffffff"}
             strokeWidth={secili ? 1.6 : 0.7}
             strokeLinejoin="round"
+            vectorEffect="non-scaling-stroke"
             role="button"
             aria-label={aria}
             tabIndex={0}
@@ -708,6 +707,7 @@ const HaritaCizim = memo(function HaritaCizim({
           stroke="#1c1917"
           strokeWidth={2}
           strokeLinejoin="round"
+          vectorEffect="non-scaling-stroke"
           className="pointer-events-none"
         />
       )}
@@ -723,76 +723,96 @@ const HaritaCizim = memo(function HaritaCizim({
               strokeWidth={2}
               strokeDasharray="5 3"
               strokeLinejoin="round"
+              vectorEffect="non-scaling-stroke"
               className="pointer-events-none"
             />
           ) : null;
         })()}
+    </g>
+  );
+});
 
-      {monte && (
-        <g
-          className="pointer-events-none select-none"
-          style={{ animation: "etiketGiris 500ms ease-out" }}
-        >
-        {harita.iller.map((h) => {
-          const il = ilHaritasi.get(h.plaka);
-          if (!il) return null;
-          const alim = alimGetir(il, donem);
-          const vurgulu =
-            h.plaka === hover || secililer.includes(h.plaka) || h.plaka === aktif;
-          const x = h.etiketX ?? h.cx;
-          const y = h.etiketY ?? h.cy;
-          const tier = h.etiketTier;
-          const soluk = tier === "yok" && !vurgulu;
-          const adBoyut = 14.5;
-          const puanBoyut = 13;
-          const halo = 3;
-          const gosterPuan = tier === "tam" || vurgulu;
-          const puanMetin =
-            mod === "uygunluk" && puan !== null
-              ? alim
-                ? puanStr(puan - alim.taban, 1)
-                : "—"
-              : alim
-                ? puanStr(alim.taban)
-                : "—";
-          return (
-            <text
-              key={h.plaka}
-              x={x}
-              y={gosterPuan ? y - puanBoyut * 0.65 : y}
-              textAnchor="middle"
-              style={{
-                fill: vurgulu ? VURGU_RENK : ETIKET_RENK,
-                fontSize: adBoyut,
-                fontWeight: 600,
-                paintOrder: "stroke",
-                stroke: "#ffffff",
-                strokeWidth: halo,
-                strokeLinejoin: "round",
-                opacity: soluk
-                  ? "clamp(0, calc((var(--zoom, 1) - 1.8) * 2), 1)"
-                  : 1,
-              }}
-            >
-              {il.ad}
-              {gosterPuan && (
-                <tspan
-                  x={x}
-                  dy={puanBoyut * 1.15}
-                  style={{
-                    fontSize: puanBoyut,
-                    fontWeight: 500,
-                    fill: vurgulu ? VURGU_RENK : "#475569",
-                  }}
-                >
-                  {puanMetin}
-                </tspan>
-              )}
-            </text>
-          );
-        })}
-        </g>
-      )}
+const HaritaEtiketleri = memo(function HaritaEtiketleri({
+  donem,
+  mod,
+  secililer,
+  aktif,
+  monte,
+  hover,
+  puan,
+  k,
+}: {
+  donem: string;
+  mod: Mod;
+  secililer: number[];
+  aktif: number | null;
+  monte: boolean;
+  hover: number | null;
+  puan: number | null;
+  k: number;
+}) {
+  if (!monte) return null;
+  return (
+    <g
+      className="pointer-events-none select-none"
+      style={{ animation: "etiketGiris 500ms ease-out" }}
+    >
+      {harita.iller.map((h) => {
+        const il = ilHaritasi.get(h.plaka);
+        if (!il) return null;
+        const alim = alimGetir(il, donem);
+        const vurgulu =
+          h.plaka === hover || secililer.includes(h.plaka) || h.plaka === aktif;
+        const x = (h.etiketX ?? h.cx) * k;
+        const y = (h.etiketY ?? h.cy) * k;
+        const tier = h.etiketTier;
+        const soluk = tier === "yok" && !vurgulu;
+        const adBoyut = 14.5;
+        const puanBoyut = 13;
+        const halo = 3;
+        const gosterPuan = tier === "tam" || vurgulu;
+        const puanMetin =
+          mod === "uygunluk" && puan !== null
+            ? alim
+              ? puanStr(puan - alim.taban, 1)
+              : "—"
+            : alim
+              ? puanStr(alim.taban)
+              : "—";
+        return (
+          <text
+            key={h.plaka}
+            x={x}
+            y={gosterPuan ? y - puanBoyut * 0.65 : y}
+            textAnchor="middle"
+            style={{
+              fill: vurgulu ? VURGU_RENK : ETIKET_RENK,
+              fontSize: adBoyut,
+              fontWeight: 600,
+              paintOrder: "stroke",
+              stroke: "#ffffff",
+              strokeWidth: halo,
+              strokeLinejoin: "round",
+              opacity: soluk ? Math.min(1, Math.max(0, (k - 1.8) * 2)) : 1,
+            }}
+          >
+            {il.ad}
+            {gosterPuan && (
+              <tspan
+                x={x}
+                dy={puanBoyut * 1.15}
+                style={{
+                  fontSize: puanBoyut,
+                  fontWeight: 500,
+                  fill: vurgulu ? VURGU_RENK : "#475569",
+                }}
+              >
+                {puanMetin}
+              </tspan>
+            )}
+          </text>
+        );
+      })}
     </g>
   );
 });

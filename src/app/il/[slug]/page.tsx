@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Plus } from "lucide-react";
 import {
+  alimGetir,
   dataset,
   dogumOrani,
   donemIstatistigi,
@@ -18,7 +19,9 @@ import { HASTANE_RENK, HASTANE_TUR_ADI } from "@/lib/colors";
 import { puanStr, sayi, tarihStr, tl } from "@/lib/format";
 import { ilOnerileri } from "@/lib/insights";
 import { SITE_URL } from "@/lib/site";
+import type { Il } from "@/lib/types";
 import AltSayfaBasligi from "@/components/AltSayfaBasligi";
+import BenzerPuanliIller from "@/components/BenzerPuanliIller";
 
 export const instant = false;
 
@@ -88,6 +91,26 @@ export default async function IlSayfasi(props: PageProps<"/il/[slug]">) {
     .sort((a, b) => a.ad.localeCompare(b.ad, "tr"))
     .slice(0, 10);
 
+  const benzerIller = dataset.iller
+    .flatMap((x) => {
+      if (x.plaka === il.plaka) return [];
+      const alim = alimGetir(x, son.donem);
+      if (!alim) return [];
+      return [{ il: x, alim, fark: alim.taban - son.taban }];
+    })
+    .sort((a, b) => Math.abs(a.fark) - Math.abs(b.fark))
+    .slice(0, 10)
+    .map((x) => ({
+      plaka: x.il.plaka,
+      ad: x.il.ad,
+      slug: ilSlug(x.il),
+      bolge: x.il.bolge,
+      taban: x.alim.taban,
+      kontenjan: x.alim.kontenjan,
+      kira: x.il.kira,
+      fark: x.fark,
+    }));
+
   const ilUrl = `${SITE_URL}/il/${slug}`;
   const jsonLd = {
     "@context": "https://schema.org",
@@ -129,10 +152,10 @@ export default async function IlSayfasi(props: PageProps<"/il/[slug]">) {
           __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c"),
         }}
       />
-      <AltSayfaBasligi bolum="İl sayfası">
+      <AltSayfaBasligi logo={false}>
         <Link
           href={`/?il=${slug}`}
-          className="ml-auto flex items-center gap-1.5 rounded-lg bg-sky-700 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-sky-800"
+          className="ml-auto flex items-center gap-1.5 rounded-lg bg-sky-700 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-sky-800 max-sm:hidden"
         >
           <Plus className="h-4 w-4" />
           Listeme ekle ve haritada incele
@@ -158,6 +181,14 @@ export default async function IlSayfasi(props: PageProps<"/il/[slug]">) {
           <b>{son.donem}</b>: taban puan <b>{puanStr(son.taban)}</b>,{" "}
           <b>{son.kontenjan}</b> ebe kadrosu.
         </p>
+
+        <Link
+          href={`/?il=${slug}`}
+          className="mt-4 flex items-center justify-center gap-1.5 rounded-lg bg-sky-700 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-sky-800 sm:hidden"
+        >
+          <Plus className="h-4 w-4" />
+          Listeme ekle ve haritada incele
+        </Link>
 
         <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
           <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
@@ -297,6 +328,12 @@ export default async function IlSayfasi(props: PageProps<"/il/[slug]">) {
           </section>
         </div>
 
+        <BenzerPuanliIller
+          donem={son.donem}
+          taban={son.taban}
+          iller={benzerIller}
+        />
+
         <section className="mt-6">
           <h2 className="text-lg font-bold text-slate-900">
             Kamu hastaneleri
@@ -305,29 +342,18 @@ export default async function IlSayfasi(props: PageProps<"/il/[slug]">) {
             SB Kamu Hastaneleri (2.-3. basamak) ve devlet üniversitesi
             hastaneleri. Renkler tesis türünü gösterir.
           </p>
-          <ul className="mt-3 grid gap-1.5 rounded-xl border border-slate-200 bg-white p-4 shadow-sm sm:grid-cols-2">
-            {il.hastaneler.map((h) => (
-              <li
-                key={h.ad}
-                className={`flex items-start gap-2 text-sm ${
-                  h.tur === "kdd"
-                    ? "font-medium text-rose-800"
-                    : "text-slate-700"
-                }`}
-              >
-                <span
-                  className="mt-1.5 h-2 w-2 shrink-0 rounded-full"
-                  style={{ background: HASTANE_RENK[h.tur] }}
-                />
-                <span>
-                  {h.ad}
-                  <span className="block text-xs text-slate-400">
-                    {HASTANE_TUR_ADI[h.tur]}
-                  </span>
+          <HastaneListesi hastaneler={il.hastaneler.slice(0, 10)} />
+          {il.hastaneler.length > 10 && (
+            <details className="group mt-1.5">
+              <summary className="inline-flex cursor-pointer select-none items-center gap-1 rounded-lg px-2 py-1.5 text-sm font-medium text-sky-700 transition hover:bg-sky-50 hover:text-sky-900">
+                <span className="group-open:hidden">
+                  Tüm {il.hastaneler.length} hastaneyi göster
                 </span>
-              </li>
-            ))}
-          </ul>
+                <span className="hidden group-open:inline">Daha az göster</span>
+              </summary>
+              <HastaneListesi hastaneler={il.hastaneler.slice(10)} />
+            </details>
+          )}
         </section>
 
         {yakinIller.length > 0 && (
@@ -379,5 +405,31 @@ export default async function IlSayfasi(props: PageProps<"/il/[slug]">) {
         </div>
       </footer>
     </div>
+  );
+}
+
+function HastaneListesi({ hastaneler }: { hastaneler: Il["hastaneler"] }) {
+  return (
+    <ul className="mt-3 grid gap-1.5 rounded-xl border border-slate-200 bg-white p-4 shadow-sm sm:grid-cols-2">
+      {hastaneler.map((h) => (
+        <li
+          key={h.ad}
+          className={`flex items-start gap-2 text-sm ${
+            h.tur === "kdd" ? "font-medium text-rose-800" : "text-slate-700"
+          }`}
+        >
+          <span
+            className="mt-1.5 h-2 w-2 shrink-0 rounded-full"
+            style={{ background: HASTANE_RENK[h.tur] }}
+          />
+          <span>
+            {h.ad}
+            <span className="block text-xs text-slate-400">
+              {HASTANE_TUR_ADI[h.tur]}
+            </span>
+          </span>
+        </li>
+      ))}
+    </ul>
   );
 }

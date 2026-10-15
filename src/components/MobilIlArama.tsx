@@ -143,7 +143,7 @@ export default function MobilIlArama({
       className="relative border-b border-slate-200 bg-white"
     >
       <div className="flex items-center gap-2 px-3 pt-2">
-        <div className="flex flex-1 items-stretch gap-2 rounded-lg border border-slate-200 bg-white px-2.5 focus-within:border-sky-400">
+        <div className="flex flex-1 items-stretch gap-2 rounded-lg border border-slate-200 bg-white px-2.5 transition focus-within:border-sky-400 focus-within:ring-2 focus-within:ring-sky-100">
           <Search className="h-4 w-4 shrink-0 self-center text-slate-400" />
           <input
             value={sorgu}

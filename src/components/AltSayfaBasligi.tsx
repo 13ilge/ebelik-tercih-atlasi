@@ -5,9 +5,11 @@ import Logo from "./Logo";
 
 export default function AltSayfaBasligi({
   bolum,
+  logo = true,
   children,
 }: {
   bolum?: string;
+  logo?: boolean;
   children?: ReactNode;
 }) {
   return (
@@ -20,12 +22,16 @@ export default function AltSayfaBasligi({
           <ArrowLeft className="h-4 w-4" />
           Haritaya dön
         </Link>
-        <span className="flex items-center gap-2">
-          <Logo boyut="sm" />
-          {bolum ? (
-            <span className="text-sm text-slate-500">· {bolum}</span>
-          ) : null}
-        </span>
+        {logo ? (
+          <span className="flex items-center gap-2">
+            <Logo boyut="sm" />
+            {bolum ? (
+              <span className="text-sm text-slate-500 max-sm:hidden">
+                · {bolum}
+              </span>
+            ) : null}
+          </span>
+        ) : null}
         {children}
       </div>
     </header>
