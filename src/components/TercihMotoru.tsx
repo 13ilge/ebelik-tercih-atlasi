@@ -382,6 +382,7 @@ export default function TercihMotoru() {
               puan={puan}
               secililer={secililer}
               aktif={aktif}
+              daralt={imlecVar && cekmece}
               onSec={ekle}
               onCikar={cikar}
             />

@@ -28,6 +28,7 @@ interface Props {
   puan: number | null;
   secililer: number[];
   aktif: number | null;
+  daralt?: boolean;
   onSec: (plaka: number) => void;
   onCikar: (plaka: number) => void;
 }
@@ -73,6 +74,7 @@ export default function TurkiyeHaritasi({
   puan,
   secililer,
   aktif,
+  daralt,
   onSec,
   onCikar,
 }: Props) {
@@ -469,37 +471,39 @@ export default function TurkiyeHaritasi({
         </g>
       </svg>
 
-      <div className="absolute bottom-3 right-3 z-20 flex flex-col gap-1">
-        <button
-          onClick={() =>
-            zoomNoktaya(gorunum.k * 1.6, harita.width / 2, harita.height / 2)
-          }
-          aria-label="Yakınlaştır"
-          className="flex h-9 w-9 items-center justify-center rounded-lg border border-slate-300 bg-white text-slate-700 shadow-sm transition hover:bg-slate-50 hover:text-slate-950"
-        >
-          <Plus className="h-4.5 w-4.5" />
-        </button>
-        <button
-          onClick={() =>
-            zoomNoktaya(gorunum.k / 1.6, harita.width / 2, harita.height / 2)
-          }
-          disabled={!yakinlastirilabilir}
-          aria-label="Uzaklaştır"
-          className="flex h-9 w-9 items-center justify-center rounded-lg border border-slate-300 bg-white text-slate-700 shadow-sm transition hover:bg-slate-50 hover:text-slate-950 disabled:cursor-default disabled:opacity-40"
-        >
-          <Minus className="h-4.5 w-4.5" />
-        </button>
-        <button
-          onClick={sifirla}
-          disabled={!yakinlastirilabilir}
-          aria-label="Haritayı sıfırla"
-          className="flex h-9 w-9 items-center justify-center rounded-lg border border-slate-300 bg-white text-slate-700 shadow-sm transition hover:bg-slate-50 hover:text-slate-950 disabled:cursor-default disabled:opacity-40"
-        >
-          <Maximize2 className="h-4 w-4" />
-        </button>
-      </div>
+      {!daralt && (
+        <div className="absolute bottom-3 right-3 z-20 flex flex-col gap-1">
+          <button
+            onClick={() =>
+              zoomNoktaya(gorunum.k * 1.6, harita.width / 2, harita.height / 2)
+            }
+            aria-label="Yakınlaştır"
+            className="flex h-9 w-9 items-center justify-center rounded-lg border border-slate-300 bg-white text-slate-700 shadow-sm transition hover:bg-slate-50 hover:text-slate-950"
+          >
+            <Plus className="h-4.5 w-4.5" />
+          </button>
+          <button
+            onClick={() =>
+              zoomNoktaya(gorunum.k / 1.6, harita.width / 2, harita.height / 2)
+            }
+            disabled={!yakinlastirilabilir}
+            aria-label="Uzaklaştır"
+            className="flex h-9 w-9 items-center justify-center rounded-lg border border-slate-300 bg-white text-slate-700 shadow-sm transition hover:bg-slate-50 hover:text-slate-950 disabled:cursor-default disabled:opacity-40"
+          >
+            <Minus className="h-4.5 w-4.5" />
+          </button>
+          <button
+            onClick={sifirla}
+            disabled={!yakinlastirilabilir}
+            aria-label="Haritayı sıfırla"
+            className="flex h-9 w-9 items-center justify-center rounded-lg border border-slate-300 bg-white text-slate-700 shadow-sm transition hover:bg-slate-50 hover:text-slate-950 disabled:cursor-default disabled:opacity-40"
+          >
+            <Maximize2 className="h-4 w-4" />
+          </button>
+        </div>
+      )}
 
-      {yakinlastirilabilir && (
+      {!daralt && yakinlastirilabilir && (
         <div className="pointer-events-none absolute bottom-[130px] right-3 z-20 rounded-md bg-slate-900/75 px-2 py-1 text-xs text-white backdrop-blur">
           %{Math.round(gorunum.k * 100)} · kaydırarak gez
         </div>
@@ -556,7 +560,7 @@ export default function TurkiyeHaritasi({
         </div>
       )}
 
-      <Legend donem={donem} mod={mod} />
+      {!daralt && <Legend donem={donem} mod={mod} />}
     </div>
   );
 }

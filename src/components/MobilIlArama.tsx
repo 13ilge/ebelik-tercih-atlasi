@@ -143,8 +143,8 @@ export default function MobilIlArama({
       className="relative border-b border-slate-200 bg-white"
     >
       <div className="flex items-center gap-2 px-3 pt-2">
-        <div className="flex flex-1 items-center gap-2 rounded-lg border border-slate-200 bg-white px-2.5 py-2 focus-within:border-sky-400">
-          <Search className="h-4 w-4 shrink-0 text-slate-400" />
+        <div className="flex flex-1 items-stretch gap-2 rounded-lg border border-slate-200 bg-white px-2.5 focus-within:border-sky-400">
+          <Search className="h-4 w-4 shrink-0 self-center text-slate-400" />
           <input
             value={sorgu}
             onChange={(e) => {
@@ -165,7 +165,7 @@ export default function MobilIlArama({
                 ? `${listeId}-${sonuclar[etkinVurgu].plaka}`
                 : undefined
             }
-            className="w-full bg-transparent text-sm text-slate-800 outline-none placeholder:text-slate-400"
+            className="w-full bg-transparent py-2 text-sm text-slate-800 outline-none placeholder:text-slate-400"
           />
           {sorgu && (
             <button
@@ -174,7 +174,7 @@ export default function MobilIlArama({
                 setAcik(false);
               }}
               aria-label="Aramayı temizle"
-              className="shrink-0 text-slate-400 hover:text-slate-700"
+              className="shrink-0 self-center text-slate-400 hover:text-slate-700"
             >
               <X className="h-4 w-4" />
             </button>
@@ -193,7 +193,7 @@ export default function MobilIlArama({
               <button
                 key={il.plaka}
                 onClick={() => sec(il.plaka)}
-                className="shrink-0 whitespace-nowrap rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-700 transition active:bg-sky-50"
+                className="shrink-0 whitespace-nowrap rounded-full border border-slate-200 bg-white px-3 py-2 text-xs font-medium text-slate-700 transition active:bg-sky-50"
               >
                 {il.ad}{" "}
                 <span className="tabular-nums text-slate-400">

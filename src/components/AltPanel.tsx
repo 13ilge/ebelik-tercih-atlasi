@@ -493,16 +493,16 @@ export default function AltPanel({
 
         <div className="mt-4 flex flex-wrap items-center justify-between gap-x-4 gap-y-1 border-t border-slate-200 pt-3 text-xs text-slate-400">
           <span>Bağımsız bilgilendirme aracı; resmî tercih kaynağı değildir.</span>
-          <span className="flex items-center gap-4">
+          <span className="flex items-center gap-2">
             <button
               onClick={onKaynak}
-              className="font-medium text-slate-500 underline underline-offset-2 transition hover:text-sky-800"
+              className="py-1 font-medium text-slate-500 underline underline-offset-2 transition hover:text-sky-800"
             >
               Veri ve kaynaklar
             </button>
             <Link
               href="/gizlilik"
-              className="font-medium text-slate-500 underline underline-offset-2 transition hover:text-sky-800"
+              className="py-1 font-medium text-slate-500 underline underline-offset-2 transition hover:text-sky-800"
             >
               Gizlilik
             </Link>
