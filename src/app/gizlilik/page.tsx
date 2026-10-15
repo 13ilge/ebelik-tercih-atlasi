@@ -48,12 +48,14 @@ export default function GizlilikSayfasi() {
 
           <section className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
             <h2 className="text-lg font-bold text-slate-900">
-              Çerez ve izleme yok
+              Çerezler ve ölçümleme
             </h2>
             <p className="mt-2 text-sm leading-relaxed text-slate-700">
-              Site çerez kullanmaz; reklam veya analitik izleme aracı
-              içermez. Ziyaretiniz boyunca kimliğinizi tanımlayan bir veri
-              toplanmaz.
+              Site çerez kullanmaz; reklam ağı ya da sizi siteler arası izleyen
+              bir takip aracı bulunmaz. Ziyaretçi sayısını ve sayfa
+              görüntülemelerini ölçmek için çerezsiz çalışan Vercel Web
+              Analytics kullanılır; bu araç kimliğinizi tanımlamaz, çerez
+              yazmaz ve veriler anonim/agrega olarak tutulur.
             </p>
           </section>
 
@@ -127,8 +129,7 @@ export default function GizlilikSayfasi() {
         </div>
 
         <p className="mt-4 text-xs leading-relaxed text-slate-400">
-          Bu not, sitenin mevcut sürümü için geçerlidir; siteye analitik veya
-          benzeri bir araç eklenirse güncellenecektir.
+          Bu not, sitenin mevcut sürümü için geçerlidir.
         </p>
       </main>
 

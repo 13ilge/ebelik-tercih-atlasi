@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import { Analytics } from "@vercel/analytics/next";
 import {
   Atkinson_Hyperlegible,
   IBM_Plex_Mono,
@@ -77,6 +78,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           }}
         />
         {children}
+        <Analytics />
       </body>
     </html>
   );
